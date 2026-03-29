@@ -6,7 +6,7 @@ import "./global.css"
 import RecipeListScreen from "./src/screeens/RecipeListScreen";
 import RecipeDetailScreen from "./src/screeens/RecipeDetailScreen";
 import AddRecipeScreen from "./src/screeens/AddRecipeScreen";
-// import CookingTipsScreen from "./src/screeens/CookingTipsScreen";
+import CookingTipsScreen from "./src/screeens/CookingTipsScreen";
 
 
 
@@ -107,7 +107,15 @@ export default function  App()  {
             ),
           }}
         />
-        {/* <Tab.Screen name="Cooking Tips" component={CookingTipsScreen} /> */}
+        <Tab.Screen
+          name="Tips"
+          component={CookingTipsScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Text style={{ fontSize: size, color }}>{"💡"}</Text>
+            ),
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   )

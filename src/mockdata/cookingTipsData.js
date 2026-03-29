@@ -1,5 +1,3 @@
-// cookingTipsData.js - Culinary tips data
-
 export const COOKING_TIPS = [
   {
     id: 1,
