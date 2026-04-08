@@ -7,7 +7,7 @@ import RecipeListScreen from "./src/screeens/RecipeListScreen";
 import RecipeDetailScreen from "./src/screeens/RecipeDetailScreen";
 import AddRecipeScreen from "./src/screeens/AddRecipeScreen";
 import CookingTipsScreen from "./src/screeens/CookingTipsScreen";
-
+import { RecipesProvider } from "./src/context/RecipesContext";
 
 
 const Tab = createBottomTabNavigator();
@@ -59,64 +59,67 @@ export default function  App()  {
   }
 
   return (
-    <NavigationContainer theme={navigationTheme}>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarActiveTintColor: "#06b6d4",
-          tabBarInactiveTintColor: "#64748b",
-          sceneStyle: {
-            backgroundColor: "#020617",
-          },
-          tabBarLabelStyle: {
-            fontSize: 13,
-            fontWeight: "700",
-          },
-          tabBarStyle: {
-            backgroundColor: "#0b1220",
-            borderTopColor: "#1e293b",
-            height: 64,
-            paddingTop: 6,
-            paddingBottom: 8,
-          },
-          headerStyle: {
-            backgroundColor: "#0b1220",
-          },
-          headerTintColor: "#e2e8f0",
-          headerTitleStyle: {
-            color: "#e2e8f0",
-            fontWeight: "700",
-          },
-        }}
-      >
-        <Tab.Screen
-          name="Recetas"
-          component={RecipesStackNavigator}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Text style={{ fontSize: size, color }}>{"📚"}</Text>
-            ),
+    <RecipesProvider>
+      <NavigationContainer theme={navigationTheme}>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarActiveTintColor: "#06b6d4",
+            tabBarInactiveTintColor: "#64748b",
+            sceneStyle: {
+              backgroundColor: "#020617",
+            },
+            tabBarLabelStyle: {
+              fontSize: 13,
+              fontWeight: "700",
+            },
+            tabBarStyle: {
+              backgroundColor: "#0b1220",
+              borderTopColor: "#1e293b",
+              height: 64,
+              paddingTop: 6,
+              paddingBottom: 8,
+            },
+            headerStyle: {
+              backgroundColor: "#0b1220",
+            },
+            headerTintColor: "#e2e8f0",
+            headerTitleStyle: {
+              color: "#e2e8f0",
+              fontWeight: "700",
+            },
           }}
-        />
-        <Tab.Screen
-          name="Nueva Receta"
-          component={AddRecipeScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Text style={{ fontSize: size, color }}>{"📝"}</Text>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Tips"
-          component={CookingTipsScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Text style={{ fontSize: size, color }}>{"💡"}</Text>
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+        >
+          <Tab.Screen
+            name="Recetas"
+            component={RecipesStackNavigator}
+            options={{
+              headerShown: false,
+              tabBarIcon: ({ color, size }) => (
+                <Text style={{ fontSize: size, color }}>{"📚"}</Text>
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Nueva Receta"
+            component={AddRecipeScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Text style={{ fontSize: size, color }}>{"📝"}</Text>
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Tips"
+            component={CookingTipsScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Text style={{ fontSize: size, color }}>{"💡"}</Text>
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </RecipesProvider>
+
   )
 }

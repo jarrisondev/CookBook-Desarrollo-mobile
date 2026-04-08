@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react"
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native"
+import { useContext, useEffect } from "react"
+import {  Text, TouchableOpacity, View } from "react-native"
 import { COOKING_TIPS } from "../mockdata/cookingTipsData"
+import { RecipesContext } from "../context/RecipesContext"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 const MAX_TIPS = COOKING_TIPS.length
 
 const CookingTipsScreen = () => {
-  const [tips] = useState(COOKING_TIPS)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [progressLabel, setProgressLabel] = useState("")
+  const { tips, currentIndex, setCurrentIndex, progressLabel, setProgressLabel } = useContext(RecipesContext)
+
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -15,11 +16,11 @@ const CookingTipsScreen = () => {
     }, 5000)
 
     return () => clearInterval(intervalId)
-  }, [])
+  }, [setCurrentIndex])
 
   useEffect(() => {
     setProgressLabel(`Tip ${currentIndex + 1} de ${MAX_TIPS}`)
-  }, [currentIndex])
+  }, [currentIndex, setCurrentIndex, setProgressLabel])
 
   const handleNextTip = () => {
     setCurrentIndex((prev) => (prev + 1) % MAX_TIPS)

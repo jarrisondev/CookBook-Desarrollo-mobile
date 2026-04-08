@@ -1,21 +1,12 @@
 import { useNavigation } from "@react-navigation/native"
-import { useEffect, useState } from "react"
+import { useContext } from "react"
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native"
-import { recipesMockData } from "../mockdata/recipesMockData"
+import { RecipesContext } from "../context/RecipesContext"
 
 const RecipeListScreen = () => {
   const navigation = useNavigation()
-  const [loading, setLoading] = useState(true)
-  const [recipes, setRecipes] = useState([])
+  const {recipes, loading} = useContext(RecipesContext)
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setRecipes(recipesMockData)
-      setLoading(false)
-    }, 1500)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   return (
     <View className="flex-1 bg-slate-950 px-4 pt-6">
