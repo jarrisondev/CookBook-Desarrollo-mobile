@@ -12,7 +12,9 @@ export type MainStackParamList = {
   Tabs: undefined;
   SearchDestination: undefined;
   VehicleSelect: { destination?: string } | undefined;
+  SearchingDriver: undefined;
   RideTracking: undefined;
+  DriverArrived: undefined;
   TripInProgress: undefined;
   Payment: undefined;
   Rating: undefined;

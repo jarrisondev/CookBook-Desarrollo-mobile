@@ -30,7 +30,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
 
   const handleBook = () => {
     dispatch(setFareEstimate(selected.price));
-    navigation.navigate('RideTracking');
+    navigation.navigate('SearchingDriver');
   };
 
   return (

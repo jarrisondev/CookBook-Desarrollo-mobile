@@ -95,11 +95,22 @@
     "book": "Book {{label}} · {{price}}",
     "promo": "Promo 15%"
   },
+  "searching": {
+    "title": "Looking for a driver…",
+    "subtitle": "We will match you with the closest driver",
+    "cancelSearch": "Cancel search"
+  },
   "tracking": {
     "minAway": "{{count}} min away",
+    "driverOnTheWay": "Your driver is on the way",
     "call": "Call",
     "message": "Message",
-    "driverArrived": "Driver arrived"
+    "cancelRide": "Cancel ride"
+  },
+  "arrived": {
+    "title": "Your driver has arrived",
+    "subtitle": "Find them outside and hop in",
+    "waiting": "Waiting for you"
   },
   "inProgress": {
     "dropoff": "Drop off",
@@ -107,7 +118,8 @@
     "cash": "Cash",
     "promo": "Promo",
     "applied": "15% Applied",
-    "endTrip": "End Trip"
+    "enjoy": "Enjoy your ride",
+    "etaToDestination": "{{count}} min to destination"
   },
   "payment": {
     "title": "Payment",

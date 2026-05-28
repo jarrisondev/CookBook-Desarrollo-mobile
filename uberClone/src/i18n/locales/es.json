@@ -95,11 +95,22 @@
     "book": "Pedir {{label}} · {{price}}",
     "promo": "Promo 15%"
   },
+  "searching": {
+    "title": "Buscando conductor…",
+    "subtitle": "Te asignaremos al conductor más cercano",
+    "cancelSearch": "Cancelar búsqueda"
+  },
   "tracking": {
     "minAway": "{{count}} min de distancia",
+    "driverOnTheWay": "Tu conductor viene en camino",
     "call": "Llamar",
     "message": "Mensaje",
-    "driverArrived": "Conductor llegó"
+    "cancelRide": "Cancelar viaje"
+  },
+  "arrived": {
+    "title": "Tu conductor llegó",
+    "subtitle": "Búscalo afuera y sube al vehículo",
+    "waiting": "Esperándote"
   },
   "inProgress": {
     "dropoff": "Destino",
@@ -107,7 +118,8 @@
     "cash": "Efectivo",
     "promo": "Promo",
     "applied": "15% Aplicado",
-    "endTrip": "Terminar viaje"
+    "enjoy": "Disfruta tu viaje",
+    "etaToDestination": "{{count}} min al destino"
   },
   "payment": {
     "title": "Pago",
