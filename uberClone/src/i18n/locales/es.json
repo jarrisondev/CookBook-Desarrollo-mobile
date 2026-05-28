@@ -51,6 +51,14 @@
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "noAccount": "¿No tienes cuenta? ",
     "hasAccount": "¿Ya tienes cuenta? ",
+    "iAmA": "Soy",
+    "rider": "Pasajero",
+    "driver": "Conductor",
+    "riderDesc": "Quiero pedir viajes",
+    "driverDesc": "Quiero ofrecer viajes",
+    "loginAs": "Demo — entrar como",
+    "demoModeHint": "Cuando integremos Firebase el rol vendrá del backend",
+    "errors_role": "Selecciona un rol",
     "errors": {
       "required": "Campo obligatorio",
       "invalidEmail": "Correo inválido",
@@ -218,6 +226,101 @@
       "xlDesc": "Viajes amplios para grupos",
       "premium": "Premium",
       "premiumDesc": "Vehículos de alta gama con conductores premium"
+    }
+  },
+  "driver": {
+    "tabs": {
+      "home": "Inicio",
+      "earnings": "Ingresos",
+      "history": "Historial",
+      "profile": "Perfil"
+    },
+    "home": {
+      "offline": "Sin conexión",
+      "online": "En línea",
+      "goOnline": "Ponte en línea",
+      "lookingForRides": "Buscando solicitudes…",
+      "stayOnline": "Mantente en línea para recibir viajes cercanos.",
+      "balance": "Balance",
+      "todayEarnings": "Ingresos de hoy",
+      "todayRides": "Viajes de hoy",
+      "viewStats": "Ver estadísticas",
+      "simulate": "Simular solicitud"
+    },
+    "incoming": {
+      "newRequest": "Nueva solicitud",
+      "accept": "Aceptar",
+      "reject": "Rechazar",
+      "secondsToAccept": "{{count}}s para aceptar",
+      "fare": "Tarifa",
+      "distance": "Distancia",
+      "bonus": "Bono",
+      "km": "{{count}} km",
+      "minutes": "{{count}} min",
+      "pickup": "Recoger",
+      "dropoff": "Dejar"
+    },
+    "pickup": {
+      "goingToPickup": "En camino a recoger",
+      "arrivedAtPickup": "He llegado",
+      "startTrip": "Iniciar viaje",
+      "callRider": "Llamar",
+      "messageRider": "Mensaje",
+      "cancelRide": "Cancelar viaje"
+    },
+    "inProgress": {
+      "tripInProgress": "Viaje en curso",
+      "endTrip": "Terminar viaje",
+      "etaToDropoff": "{{count}} min al destino"
+    },
+    "completed": {
+      "tripCompleted": "¡Viaje completado!",
+      "youEarned": "Ganaste",
+      "baseFare": "Tarifa base",
+      "tip": "Propina",
+      "total": "Total",
+      "next": "Siguiente"
+    },
+    "earnings": {
+      "title": "Ingresos",
+      "subtitle": "Tu rendimiento esta semana",
+      "weekly": "Semanal",
+      "balance": "Balance",
+      "revenue": "Ingreso",
+      "net": "Neto",
+      "finishedRides": "Viajes finalizados de las solicitudes entrantes",
+      "bonuses": "Bonos",
+      "totalThisWeek": "Total esta semana"
+    },
+    "stats": {
+      "title": "Estadísticas",
+      "accepted": "Aceptados",
+      "rating": "Calificación",
+      "cancelled": "Cancelados"
+    },
+    "activeRides": {
+      "title": "Viajes activos",
+      "target": "Meta semanal"
+    },
+    "history": {
+      "title": "Tus viajes",
+      "subtitle": "Revisa tu actividad reciente",
+      "empty": "Aún no hay viajes",
+      "tip": "Propina"
+    },
+    "profile": {
+      "title": "Perfil",
+      "personalData": "Datos personales",
+      "vehicle": "Vehículo",
+      "vehicleBrand": "Marca",
+      "vehicleModel": "Modelo",
+      "vehicleColor": "Color",
+      "vehiclePlate": "Placa",
+      "vehicleYear": "Año",
+      "vehicleSeats": "Asientos",
+      "vehicleCategory": "Categoría",
+      "totalRides": "Viajes totales",
+      "yearsActive": "Años activo"
     }
   }
 }

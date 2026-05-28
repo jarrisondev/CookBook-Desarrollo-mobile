@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { ChevronLeft, Lock, Mail, Phone, User } from 'lucide-react-native';
+import { Car, ChevronLeft, Lock, Mail, Phone, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -11,11 +11,15 @@ import {
   TextField,
 } from '../../components';
 import { useIconColor } from '../../hooks/useIconColor';
+import { useAppDispatch } from '../../store';
+import { signIn } from '../../store/slices/authSlice';
+import type { UserRole } from '../../store/slices/authSlice';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 type FormState = {
+  role: UserRole | '';
   fullName: string;
   email: string;
   phone: string;
@@ -26,7 +30,9 @@ type FormState = {
 export function RegisterScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const iconColor = useIconColor();
+  const dispatch = useAppDispatch();
   const [form, setForm] = useState<FormState>({
+    role: '',
     fullName: '',
     email: '',
     phone: '',
@@ -41,6 +47,7 @@ export function RegisterScreen({ navigation }: Props) {
 
   const validate = () => {
     const next: Partial<Record<keyof FormState, string>> = {};
+    if (!form.role) next.role = t('auth.errors_role');
     if (!form.fullName.trim()) next.fullName = t('auth.errors.required');
     else if (form.fullName.length > 50) next.fullName = t('auth.errors.nameMax');
     if (!form.email.trim()) next.email = t('auth.errors.required');
@@ -55,7 +62,19 @@ export function RegisterScreen({ navigation }: Props) {
   };
 
   const handleSubmit = () => {
-    if (!validate()) return;
+    if (!validate() || !form.role) return;
+    dispatch(
+      signIn({
+        id: 'demo-' + Date.now(),
+        fullName: form.fullName,
+        email: form.email,
+        phone: form.phone,
+        gender: form.gender as 'male' | 'female' | 'other',
+        role: form.role,
+        level: form.role === 'driver' ? 'Pro Driver' : 'Basic Level',
+        balance: form.role === 'driver' ? 564.78 : 0,
+      }),
+    );
     navigation.replace('EnableLocation');
   };
 
@@ -70,9 +89,58 @@ export function RegisterScreen({ navigation }: Props) {
         />
       </View>
       <View className="mt-6">
-        <Text className="text-ink-900 dark:text-white text-3xl font-bold">{t('auth.createAccount')}</Text>
-        <Text className="text-muted dark:text-ink-400 text-base mt-2">{t('auth.registerSubtitle')}</Text>
+        <Text className="text-ink-900 dark:text-white text-3xl font-bold">
+          {t('auth.createAccount')}
+        </Text>
+        <Text className="text-muted dark:text-ink-400 text-base mt-2">
+          {t('auth.registerSubtitle')}
+        </Text>
       </View>
+
+      <Text className="text-ink-900 dark:text-white font-bold text-base mt-8 mb-3">
+        {t('auth.iAmA')}
+      </Text>
+      <View className="flex-row gap-3">
+        {(['rider', 'driver'] as UserRole[]).map((role) => {
+          const isSelected = form.role === role;
+          return (
+            <Pressable
+              key={role}
+              onPress={() => update('role', role)}
+              className={`flex-1 items-center p-5 rounded-2xl border-2 ${
+                isSelected
+                  ? 'border-primary-500 bg-primary-50'
+                  : 'border-border dark:border-dark-border bg-surface dark:bg-dark-surface'
+              }`}
+            >
+              <View
+                className={`w-14 h-14 rounded-full items-center justify-center mb-3 ${
+                  isSelected ? 'bg-primary-500' : 'bg-ink-100 dark:bg-ink-700'
+                }`}
+              >
+                {role === 'rider' ? (
+                  <User size={26} color={isSelected ? '#fff' : iconColor.primary} />
+                ) : (
+                  <Car size={26} color={isSelected ? '#fff' : iconColor.primary} />
+                )}
+              </View>
+              <Text
+                className={`font-bold text-base ${
+                  isSelected ? 'text-primary-700' : 'text-ink-900 dark:text-white'
+                }`}
+              >
+                {t(`auth.${role}`)}
+              </Text>
+              <Text className="text-muted dark:text-ink-400 text-xs text-center mt-1">
+                {t(`auth.${role}Desc`)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      {errors.role ? (
+        <Text className="text-danger text-xs mt-2">{errors.role}</Text>
+      ) : null}
 
       <View className="mt-8 gap-4">
         <TextField

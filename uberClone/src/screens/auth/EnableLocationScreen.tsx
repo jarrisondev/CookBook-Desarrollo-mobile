@@ -3,13 +3,15 @@ import { MapPin } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, MapPlaceholder } from '../../components';
+import { useAppSelector } from '../../store';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EnableLocation'>;
 
 export function EnableLocationScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const handleEnable = () => navigation.replace('Main');
+  const role = useAppSelector((s) => s.auth.user?.role);
+  const handleEnable = () => navigation.replace(role === 'driver' ? 'Driver' : 'Main');
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">

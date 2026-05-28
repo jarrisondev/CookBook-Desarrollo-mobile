@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 export type Gender = 'male' | 'female' | 'other';
+export type UserRole = 'rider' | 'driver';
 
 export type UserProfile = {
   id: string;
@@ -9,6 +10,7 @@ export type UserProfile = {
   email: string;
   phone: string;
   gender: Gender;
+  role: UserRole;
   photoUri?: string;
   level: string;
   balance: number;

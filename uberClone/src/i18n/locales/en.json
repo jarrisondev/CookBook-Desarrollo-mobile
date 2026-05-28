@@ -51,6 +51,14 @@
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account? ",
     "hasAccount": "Already have an account? ",
+    "iAmA": "I am a",
+    "rider": "Rider",
+    "driver": "Driver",
+    "riderDesc": "I want to book rides",
+    "driverDesc": "I want to offer rides",
+    "loginAs": "Demo — sign in as",
+    "demoModeHint": "When we integrate Firebase the role will come from the backend",
+    "errors_role": "Select a role",
     "errors": {
       "required": "Required",
       "invalidEmail": "Invalid email",
@@ -218,6 +226,101 @@
       "xlDesc": "Spacious rides for groups",
       "premium": "Premium",
       "premiumDesc": "High-end vehicles with top drivers"
+    }
+  },
+  "driver": {
+    "tabs": {
+      "home": "Home",
+      "earnings": "Earnings",
+      "history": "History",
+      "profile": "Profile"
+    },
+    "home": {
+      "offline": "Offline",
+      "online": "Online",
+      "goOnline": "Go online",
+      "lookingForRides": "Looking for ride requests…",
+      "stayOnline": "Stay online to receive nearby trips.",
+      "balance": "Balance",
+      "todayEarnings": "Today's earnings",
+      "todayRides": "Today's rides",
+      "viewStats": "View stats",
+      "simulate": "Simulate request"
+    },
+    "incoming": {
+      "newRequest": "New request",
+      "accept": "Accept",
+      "reject": "Reject",
+      "secondsToAccept": "{{count}}s to accept",
+      "fare": "Fare",
+      "distance": "Distance",
+      "bonus": "Bonus",
+      "km": "{{count}} km",
+      "minutes": "{{count}} min",
+      "pickup": "Pickup",
+      "dropoff": "Drop off"
+    },
+    "pickup": {
+      "goingToPickup": "On the way to pickup",
+      "arrivedAtPickup": "I've arrived",
+      "startTrip": "Start trip",
+      "callRider": "Call",
+      "messageRider": "Message",
+      "cancelRide": "Cancel ride"
+    },
+    "inProgress": {
+      "tripInProgress": "Trip in progress",
+      "endTrip": "End trip",
+      "etaToDropoff": "{{count}} min to drop off"
+    },
+    "completed": {
+      "tripCompleted": "Trip completed!",
+      "youEarned": "You earned",
+      "baseFare": "Base fare",
+      "tip": "Tip",
+      "total": "Total",
+      "next": "Next"
+    },
+    "earnings": {
+      "title": "Earnings",
+      "subtitle": "Your performance this week",
+      "weekly": "Weekly",
+      "balance": "Balance",
+      "revenue": "Revenue",
+      "net": "Net",
+      "finishedRides": "Number of finished rides from incoming requests",
+      "bonuses": "Bonuses",
+      "totalThisWeek": "Total this week"
+    },
+    "stats": {
+      "title": "Stats",
+      "accepted": "Accepted",
+      "rating": "Rating",
+      "cancelled": "Cancelled"
+    },
+    "activeRides": {
+      "title": "Active rides",
+      "target": "Weekly target"
+    },
+    "history": {
+      "title": "Your trips",
+      "subtitle": "Review your recent activity",
+      "empty": "No trips yet",
+      "tip": "Tip"
+    },
+    "profile": {
+      "title": "Profile",
+      "personalData": "Personal data",
+      "vehicle": "Vehicle",
+      "vehicleBrand": "Brand",
+      "vehicleModel": "Model",
+      "vehicleColor": "Color",
+      "vehiclePlate": "Plate",
+      "vehicleYear": "Year",
+      "vehicleSeats": "Seats",
+      "vehicleCategory": "Category",
+      "totalRides": "Total rides",
+      "yearsActive": "Years active"
     }
   }
 }

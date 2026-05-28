@@ -11,6 +11,8 @@ import { LoginScreen } from '../screens/auth/LoginScreen';
 import { RegisterScreen } from '../screens/auth/RegisterScreen';
 import { EnableLocationScreen } from '../screens/auth/EnableLocationScreen';
 import { MainNavigator } from './MainNavigator';
+import { DriverNavigator } from './DriverNavigator';
+import { useAppSelector } from '../store';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -19,6 +21,7 @@ export function RootNavigator() {
   useLanguageSync();
   useThemeSync();
   const isDark = useIsDark();
+  const role = useAppSelector((s) => s.auth.user?.role);
 
   const navTheme = useMemo(
     () => ({
@@ -52,7 +55,11 @@ export function RootNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="EnableLocation" component={EnableLocationScreen} />
-        <Stack.Screen name="Main" component={MainNavigator} />
+        {role === 'driver' ? (
+          <Stack.Screen name="Driver" component={DriverNavigator} />
+        ) : (
+          <Stack.Screen name="Main" component={MainNavigator} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

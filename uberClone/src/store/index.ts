@@ -13,11 +13,13 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 import { authReducer } from './slices/authSlice';
+import { driverReducer } from './slices/driverSlice';
 import { preferencesReducer } from './slices/preferencesSlice';
 import { rideReducer } from './slices/rideSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  driver: driverReducer,
   preferences: preferencesReducer,
   ride: rideReducer,
 });

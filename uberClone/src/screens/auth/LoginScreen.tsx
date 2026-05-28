@@ -4,15 +4,20 @@ import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, ScreenContainer, TextField } from '../../components';
+import { useAppDispatch } from '../../store';
+import { signIn } from '../../store/slices/authSlice';
+import type { UserRole } from '../../store/slices/authSlice';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export function LoginScreen({ navigation }: Props) {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [demoRole, setDemoRole] = useState<UserRole>('rider');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const validate = () => {
@@ -26,17 +31,66 @@ export function LoginScreen({ navigation }: Props) {
 
   const handleSubmit = () => {
     if (!validate()) return;
+    dispatch(
+      signIn({
+        id: 'demo-' + Date.now(),
+        fullName: demoRole === 'driver' ? 'Mahmud Hasan' : 'Jarrison Cano',
+        email,
+        phone: '+57 300 000 0000',
+        gender: 'male',
+        role: demoRole,
+        level: demoRole === 'driver' ? 'Pro Driver' : 'Basic Level',
+        balance: 564.78,
+      }),
+    );
     navigation.replace('EnableLocation');
   };
 
   return (
     <ScreenContainer scroll>
       <View className="mt-12">
-        <Text className="text-ink-900 dark:text-white text-3xl font-bold">{t('auth.welcomeBack')}</Text>
-        <Text className="text-muted dark:text-ink-400 text-base mt-2">{t('auth.signInSubtitle')}</Text>
+        <Text className="text-ink-900 dark:text-white text-3xl font-bold">
+          {t('auth.welcomeBack')}
+        </Text>
+        <Text className="text-muted dark:text-ink-400 text-base mt-2">
+          {t('auth.signInSubtitle')}
+        </Text>
       </View>
 
-      <View className="mt-10 gap-4">
+      <View className="mt-8">
+        <Text className="text-muted dark:text-ink-400 text-xs font-semibold mb-2">
+          {t('auth.loginAs')}
+        </Text>
+        <View className="flex-row bg-ink-100 dark:bg-ink-700 rounded-2xl p-1">
+          {(['rider', 'driver'] as UserRole[]).map((role) => {
+            const isSelected = demoRole === role;
+            return (
+              <Pressable
+                key={role}
+                onPress={() => setDemoRole(role)}
+                className={`flex-1 items-center py-3 rounded-xl ${
+                  isSelected ? 'bg-white dark:bg-dark-surface' : ''
+                }`}
+              >
+                <Text
+                  className={`font-semibold text-sm ${
+                    isSelected
+                      ? 'text-primary-700'
+                      : 'text-muted dark:text-ink-400'
+                  }`}
+                >
+                  {t(`auth.${role}`)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text className="text-muted dark:text-ink-400 text-[11px] mt-1.5 italic">
+          {t('auth.demoModeHint')}
+        </Text>
+      </View>
+
+      <View className="mt-6 gap-4">
         <TextField
           label={t('auth.email')}
           placeholder={t('auth.emailPlaceholder')}
@@ -66,7 +120,9 @@ export function LoginScreen({ navigation }: Props) {
           }
         />
         <Pressable className="self-end">
-          <Text className="text-primary-600 font-semibold text-sm">{t('auth.forgotPassword')}</Text>
+          <Text className="text-primary-600 font-semibold text-sm">
+            {t('auth.forgotPassword')}
+          </Text>
         </Pressable>
       </View>
 

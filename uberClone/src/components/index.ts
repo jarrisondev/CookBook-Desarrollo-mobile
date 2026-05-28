@@ -1,4 +1,5 @@
 export { Avatar } from './Avatar';
+export { BarChart } from './BarChart';
 export { BottomSheet } from './BottomSheet';
 export { Button } from './Button';
 export { Card } from './Card';
