@@ -7,20 +7,16 @@ import {
   ChevronUp,
   Crosshair,
   Home as HomeIcon,
-  Menu,
   Search,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
-  Avatar,
   BottomSheet,
-  IconButton,
   MapPlaceholder,
 } from '../../../components';
 import { shadows } from '../../../theme';
-import { useIconColor } from '../../../hooks/useIconColor';
 import { savedPlaces } from '../../../constants/mockData';
-import { useAppDispatch, useAppSelector } from '../../../store';
+import { useAppDispatch } from '../../../store';
 import { setDestination } from '../../../store/slices/rideSlice';
 import type { TabScreenProps } from '../../../navigation/types';
 
@@ -39,10 +35,8 @@ const iconForType = (type: string) => {
 
 export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const iconColor = useIconColor();
   const [expanded, setExpanded] = useState(false);
   const dispatch = useAppDispatch();
-  const user = useAppSelector((s) => s.auth.user);
 
   const handlePickPlace = (label: string, address: string) => {
     dispatch(setDestination({ label, address }));
@@ -54,18 +48,16 @@ export function HomeScreen({ navigation }: Props) {
       <MapPlaceholder showPulse />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
-        <View className="flex-row items-center justify-between mt-2">
-          <IconButton icon={<Menu size={22} color={iconColor.primary} />} />
+        <View className="items-center mt-2">
           <View
             className="bg-surface dark:bg-dark-surface px-4 py-1.5 rounded-full flex-row items-center"
             style={shadows.card}
           >
             <View className="w-2 h-2 rounded-full bg-success mr-2" />
-            <Text className="text-ink-900 dark:text-white font-semibold text-sm">{t('common.online')}</Text>
+            <Text className="text-ink-900 dark:text-white font-semibold text-sm">
+              {t('common.online')}
+            </Text>
           </View>
-          <Pressable>
-            <Avatar name={user?.fullName ?? 'Guest'} size={44} />
-          </Pressable>
         </View>
       </SafeAreaView>
 

@@ -1,14 +1,13 @@
 import { useEffect } from 'react';
 import { Pressable, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronUp, Menu } from 'lucide-react-native';
+import { ChevronUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   BottomSheet,
   Card,
   Divider,
-  IconButton,
 } from '../../../components';
 import { shadows } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store';
@@ -16,7 +15,6 @@ import {
   setIncomingRequest,
   setOnline,
 } from '../../../store/slices/driverSlice';
-import { useIconColor } from '../../../hooks/useIconColor';
 import {
   driverStats,
   mockDriverProfile,
@@ -37,7 +35,6 @@ const todaysEarnings = weeklyEarnings[weeklyEarnings.length - 1];
 export function DriverHomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const iconColor = useIconColor();
   const online = useAppSelector((s) => s.driver.online);
   const currentRequest = useAppSelector((s) => s.driver.currentRequest);
 
@@ -56,8 +53,7 @@ export function DriverHomeScreen({ navigation }: Props) {
       <MapPlaceholder showPulse={online} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
-        <View className="flex-row items-center justify-between mt-2">
-          <IconButton icon={<Menu size={22} color={iconColor.primary} />} />
+        <View className="items-center mt-2">
           <View
             className="bg-surface dark:bg-dark-surface px-4 py-1.5 rounded-full flex-row items-center"
             style={shadows.card}
@@ -77,9 +73,6 @@ export function DriverHomeScreen({ navigation }: Props) {
               style={{ transform: [{ scale: 0.8 }] }}
             />
           </View>
-          <Pressable>
-            <Avatar name={mockDriverProfile.fullName} size={44} />
-          </Pressable>
         </View>
 
         {online ? (
