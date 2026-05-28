@@ -10,6 +10,7 @@ import {
   Select,
   TextField,
 } from '../../components';
+import { useIconColor } from '../../hooks/useIconColor';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
@@ -24,6 +25,7 @@ type FormState = {
 
 export function RegisterScreen({ navigation }: Props) {
   const { t } = useTranslation();
+  const iconColor = useIconColor();
   const [form, setForm] = useState<FormState>({
     fullName: '',
     email: '',
@@ -61,15 +63,15 @@ export function RegisterScreen({ navigation }: Props) {
     <ScreenContainer scroll>
       <View className="flex-row items-center mt-4">
         <IconButton
-          icon={<ChevronLeft size={22} color="#0F1115" />}
+          icon={<ChevronLeft size={22} color={iconColor.primary} />}
           onPress={() => navigation.goBack()}
           elevated={false}
           size={40}
         />
       </View>
       <View className="mt-6">
-        <Text className="text-ink-900 text-3xl font-bold">{t('auth.createAccount')}</Text>
-        <Text className="text-muted text-base mt-2">{t('auth.registerSubtitle')}</Text>
+        <Text className="text-ink-900 dark:text-white text-3xl font-bold">{t('auth.createAccount')}</Text>
+        <Text className="text-muted dark:text-ink-400 text-base mt-2">{t('auth.registerSubtitle')}</Text>
       </View>
 
       <View className="mt-8 gap-4">
@@ -129,7 +131,7 @@ export function RegisterScreen({ navigation }: Props) {
       </View>
 
       <View className="flex-row items-center justify-center mt-6 mb-4">
-        <Text className="text-muted text-sm">{t('auth.hasAccount')}</Text>
+        <Text className="text-muted dark:text-ink-400 text-sm">{t('auth.hasAccount')}</Text>
         <Pressable onPress={() => navigation.navigate('Login')}>
           <Text className="text-primary-600 font-semibold text-sm">{t('auth.signIn')}</Text>
         </Pressable>

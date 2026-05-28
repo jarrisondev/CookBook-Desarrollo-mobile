@@ -32,7 +32,7 @@ export function OnboardingScreen({ navigation }: Props) {
   };
 
   return (
-    <View className="flex-1 bg-bg">
+    <View className="flex-1 bg-bg dark:bg-dark-bg">
       <FlatList
         ref={listRef}
         data={slides}
@@ -51,8 +51,8 @@ export function OnboardingScreen({ navigation }: Props) {
               <View className="w-56 h-56 rounded-full bg-primary-100 items-center justify-center mb-12">
                 <Icon size={88} color="#16A34A" strokeWidth={1.5} />
               </View>
-              <Text className="text-ink-900 text-3xl font-bold text-center">{item.title}</Text>
-              <Text className="text-muted text-base text-center mt-4 leading-6">
+              <Text className="text-ink-900 dark:text-white text-3xl font-bold text-center">{item.title}</Text>
+              <Text className="text-muted dark:text-ink-400 text-base text-center mt-4 leading-6">
                 {item.description}
               </Text>
             </View>
@@ -64,7 +64,7 @@ export function OnboardingScreen({ navigation }: Props) {
           {slides.map((_, i) => (
             <View
               key={i}
-              className={`h-2 rounded-full mx-1 ${i === index ? 'bg-primary-500 w-6' : 'bg-ink-200 w-2'}`}
+              className={`h-2 rounded-full mx-1 ${i === index ? 'bg-primary-500 w-6' : 'bg-ink-200 dark:bg-ink-500 w-2'}`}
             />
           ))}
         </View>

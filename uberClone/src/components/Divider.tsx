@@ -5,5 +5,5 @@ type Props = {
 };
 
 export function Divider({ className = '' }: Props) {
-  return <View className={`h-px bg-ink-200 w-full ${className}`} />;
+  return <View className={`h-px bg-ink-200 dark:bg-dark-border w-full ${className}`} />;
 }

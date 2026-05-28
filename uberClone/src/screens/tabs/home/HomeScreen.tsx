@@ -18,6 +18,7 @@ import {
   MapPlaceholder,
 } from '../../../components';
 import { shadows } from '../../../theme';
+import { useIconColor } from '../../../hooks/useIconColor';
 import { savedPlaces } from '../../../constants/mockData';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { setDestination } from '../../../store/slices/rideSlice';
@@ -38,6 +39,7 @@ const iconForType = (type: string) => {
 
 export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
+  const iconColor = useIconColor();
   const [expanded, setExpanded] = useState(false);
   const dispatch = useAppDispatch();
   const user = useAppSelector((s) => s.auth.user);
@@ -48,18 +50,18 @@ export function HomeScreen({ navigation }: Props) {
   };
 
   return (
-    <View className="flex-1 bg-bg">
+    <View className="flex-1 bg-bg dark:bg-dark-bg">
       <MapPlaceholder showPulse />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="flex-row items-center justify-between mt-2">
-          <IconButton icon={<Menu size={22} color="#0F1115" />} />
+          <IconButton icon={<Menu size={22} color={iconColor.primary} />} />
           <View
-            className="bg-surface px-4 py-1.5 rounded-full flex-row items-center"
+            className="bg-surface dark:bg-dark-surface px-4 py-1.5 rounded-full flex-row items-center"
             style={shadows.card}
           >
             <View className="w-2 h-2 rounded-full bg-success mr-2" />
-            <Text className="text-ink-900 font-semibold text-sm">{t('common.online')}</Text>
+            <Text className="text-ink-900 dark:text-white font-semibold text-sm">{t('common.online')}</Text>
           </View>
           <Pressable>
             <Avatar name={user?.fullName ?? 'Guest'} size={44} />
@@ -74,7 +76,7 @@ export function HomeScreen({ navigation }: Props) {
         onChangeExpanded={setExpanded}
       >
         <Pressable
-          className="flex-row items-center bg-ink-50 rounded-2xl px-4 h-14"
+          className="flex-row items-center bg-ink-50 dark:bg-ink-700 rounded-2xl px-4 h-14"
           onPress={() => navigation.navigate('SearchDestination')}
         >
           <Search size={20} color="#6B7280" />
@@ -87,7 +89,7 @@ export function HomeScreen({ navigation }: Props) {
         </Pressable>
 
         <View className="mt-6">
-          <Text className="text-ink-900 font-bold text-base mb-3">{t('home.savedPlaces')}</Text>
+          <Text className="text-ink-900 dark:text-white font-bold text-base mb-3">{t('home.savedPlaces')}</Text>
           <View className="flex-row justify-between">
             {quickPlaces.map((place) => (
               <Pressable
@@ -98,8 +100,8 @@ export function HomeScreen({ navigation }: Props) {
                 <View className="w-14 h-14 rounded-full bg-ink-900 items-center justify-center mb-2">
                   {iconForType(place.type)}
                 </View>
-                <Text className="text-ink-900 font-semibold text-sm">{place.label}</Text>
-                <Text className="text-muted text-xs">{place.address.split(',')[0]}</Text>
+                <Text className="text-ink-900 dark:text-white font-semibold text-sm">{place.label}</Text>
+                <Text className="text-muted dark:text-ink-400 text-xs">{place.address.split(',')[0]}</Text>
               </Pressable>
             ))}
           </View>

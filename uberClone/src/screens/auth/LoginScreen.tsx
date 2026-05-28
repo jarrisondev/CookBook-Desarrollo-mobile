@@ -32,8 +32,8 @@ export function LoginScreen({ navigation }: Props) {
   return (
     <ScreenContainer scroll>
       <View className="mt-12">
-        <Text className="text-ink-900 text-3xl font-bold">{t('auth.welcomeBack')}</Text>
-        <Text className="text-muted text-base mt-2">{t('auth.signInSubtitle')}</Text>
+        <Text className="text-ink-900 dark:text-white text-3xl font-bold">{t('auth.welcomeBack')}</Text>
+        <Text className="text-muted dark:text-ink-400 text-base mt-2">{t('auth.signInSubtitle')}</Text>
       </View>
 
       <View className="mt-10 gap-4">
@@ -75,7 +75,7 @@ export function LoginScreen({ navigation }: Props) {
       </View>
 
       <View className="flex-row items-center justify-center mt-8">
-        <Text className="text-muted text-sm">{t('auth.noAccount')}</Text>
+        <Text className="text-muted dark:text-ink-400 text-sm">{t('auth.noAccount')}</Text>
         <Pressable onPress={() => navigation.navigate('Register')}>
           <Text className="text-primary-600 font-semibold text-sm">{t('auth.signUp')}</Text>
         </Pressable>

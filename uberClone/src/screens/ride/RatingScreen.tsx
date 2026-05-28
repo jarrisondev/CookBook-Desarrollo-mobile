@@ -29,8 +29,8 @@ export function RatingScreen({ navigation }: Props) {
     <ScreenContainer scroll>
       <View className="items-center mt-8">
         <Avatar name={mockDriver.name} size={88} />
-        <Text className="text-ink-900 text-2xl font-bold mt-4">{t('rating.title')}</Text>
-        <Text className="text-muted text-base mt-2 text-center">
+        <Text className="text-ink-900 dark:text-white text-2xl font-bold mt-4">{t('rating.title')}</Text>
+        <Text className="text-muted dark:text-ink-400 text-base mt-2 text-center">
           {t('rating.description', { driver: mockDriver.name })}
         </Text>
       </View>
@@ -47,7 +47,7 @@ export function RatingScreen({ navigation }: Props) {
         ))}
       </View>
 
-      <Text className="text-ink-900 font-bold text-base mt-10 mb-3">{t('rating.tipDriver')}</Text>
+      <Text className="text-ink-900 dark:text-white font-bold text-base mt-10 mb-3">{t('rating.tipDriver')}</Text>
       <View className="flex-row gap-2">
         {tips.map((amount, i) => {
           const isSelected = tipIndex === i;
@@ -56,10 +56,10 @@ export function RatingScreen({ navigation }: Props) {
               key={amount}
               onPress={() => setTipIndex(i)}
               className={`flex-1 items-center py-3 rounded-2xl border ${
-                isSelected ? 'bg-primary-500 border-primary-500' : 'bg-surface border-border'
+                isSelected ? 'bg-primary-500 border-primary-500' : 'bg-surface dark:bg-dark-surface border-border dark:border-dark-border'
               }`}
             >
-              <Text className={`font-semibold ${isSelected ? 'text-white' : 'text-ink-900'}`}>
+              <Text className={`font-semibold ${isSelected ? 'text-white' : 'text-ink-900 dark:text-white'}`}>
                 {amount === 0 ? t('rating.noTip') : `$${amount.toFixed(2)}`}
               </Text>
             </Pressable>
@@ -67,10 +67,10 @@ export function RatingScreen({ navigation }: Props) {
         })}
       </View>
 
-      <Text className="text-ink-900 font-bold text-base mt-8 mb-3">
+      <Text className="text-ink-900 dark:text-white font-bold text-base mt-8 mb-3">
         {t('rating.leaveComment')}
       </Text>
-      <View className="bg-surface border border-border rounded-2xl px-4 py-3">
+      <View className="bg-surface dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl px-4 py-3">
         <TextInput
           placeholder={t('rating.commentPlaceholder')}
           placeholderTextColor="#9CA3AF"
@@ -78,7 +78,7 @@ export function RatingScreen({ navigation }: Props) {
           numberOfLines={4}
           value={comment}
           onChangeText={setComment}
-          className="text-ink-900 min-h-24 text-base"
+          className="text-ink-900 dark:text-white min-h-24 text-base"
           textAlignVertical="top"
         />
       </View>

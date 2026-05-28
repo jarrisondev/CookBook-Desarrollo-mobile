@@ -10,12 +10,14 @@ import {
   ScreenContainer,
   TextField,
 } from '../../../components';
+import { useIconColor } from '../../../hooks/useIconColor';
 import type { MainStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'AddCard'>;
 
 export function AddCardScreen({ navigation }: Props) {
   const { t } = useTranslation();
+  const iconColor = useIconColor();
   const [holder, setHolder] = useState('');
   const [number, setNumber] = useState('');
   const [expiry, setExpiry] = useState('');
@@ -41,12 +43,12 @@ export function AddCardScreen({ navigation }: Props) {
     <ScreenContainer scroll>
       <View className="flex-row items-center mt-2">
         <IconButton
-          icon={<ChevronLeft size={22} color="#0F1115" />}
+          icon={<ChevronLeft size={22} color={iconColor.primary} />}
           onPress={() => navigation.goBack()}
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 text-xl font-bold ml-2">{t('addCard.title')}</Text>
+        <Text className="text-ink-900 dark:text-white text-xl font-bold ml-2">{t('addCard.title')}</Text>
       </View>
 
       <View className="mt-6">

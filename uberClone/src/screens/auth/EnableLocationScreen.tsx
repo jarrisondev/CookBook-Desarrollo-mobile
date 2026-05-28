@@ -12,14 +12,14 @@ export function EnableLocationScreen({ navigation }: Props) {
   const handleEnable = () => navigation.replace('Main');
 
   return (
-    <View className="flex-1 bg-bg">
+    <View className="flex-1 bg-bg dark:bg-dark-bg">
       <MapPlaceholder showPulse={false} />
       <View className="flex-1 items-center justify-center px-8">
         <View className="w-36 h-36 rounded-full bg-primary-100 items-center justify-center mb-8">
           <MapPin size={72} color="#16A34A" strokeWidth={1.5} />
         </View>
-        <Text className="text-ink-900 text-2xl font-bold text-center">{t('location.title')}</Text>
-        <Text className="text-muted text-base text-center mt-3 leading-6">
+        <Text className="text-ink-900 dark:text-white text-2xl font-bold text-center">{t('location.title')}</Text>
+        <Text className="text-muted dark:text-ink-400 text-base text-center mt-3 leading-6">
           {t('location.description')}
         </Text>
       </View>

@@ -13,7 +13,7 @@ type Props = {
 };
 
 const variantClasses: Record<Variant, string> = {
-  surface: 'bg-surface',
+  surface: 'bg-surface dark:bg-dark-surface',
   primary: 'bg-primary-500',
   ghost: 'bg-transparent',
 };

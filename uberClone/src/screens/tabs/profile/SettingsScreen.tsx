@@ -17,6 +17,7 @@ import {
   ListItem,
   ScreenContainer,
 } from '../../../components';
+import { useIconColor } from '../../../hooks/useIconColor';
 import { useAppDispatch } from '../../../store';
 import { signOut } from '../../../store/slices/authSlice';
 import type { MainStackParamList } from '../../../navigation/types';
@@ -26,6 +27,7 @@ type Props = NativeStackScreenProps<MainStackParamList, 'Settings'>;
 export function SettingsScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const iconColor = useIconColor();
 
   const handleLogout = () => {
     dispatch(signOut());
@@ -36,37 +38,37 @@ export function SettingsScreen({ navigation }: Props) {
     <ScreenContainer scroll>
       <View className="flex-row items-center mt-2">
         <IconButton
-          icon={<ChevronLeft size={22} color="#0F1115" />}
+          icon={<ChevronLeft size={22} color={iconColor.primary} />}
           onPress={() => navigation.goBack()}
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 text-xl font-bold ml-2">{t('settings.title')}</Text>
+        <Text className="text-ink-900 dark:text-white text-xl font-bold ml-2">{t('settings.title')}</Text>
       </View>
 
       <View className="mt-6 gap-2">
         <ListItem
           title={t('settings.notifications')}
           subtitle={t('settings.notificationsSubtitle')}
-          leftIcon={<Bell size={18} color="#0F1115" />}
+          leftIcon={<Bell size={18} color={iconColor.primary} />}
           onPress={() => undefined}
         />
         <ListItem
           title={t('settings.privacy')}
           subtitle={t('settings.privacySubtitle')}
-          leftIcon={<Shield size={18} color="#0F1115" />}
+          leftIcon={<Shield size={18} color={iconColor.primary} />}
           onPress={() => undefined}
         />
         <ListItem
           title={t('settings.help')}
           subtitle={t('settings.helpSubtitle')}
-          leftIcon={<CircleHelp size={18} color="#0F1115" />}
+          leftIcon={<CircleHelp size={18} color={iconColor.primary} />}
           onPress={() => undefined}
         />
         <ListItem
           title={t('settings.terms')}
           subtitle={t('settings.termsSubtitle')}
-          leftIcon={<FileText size={18} color="#0F1115" />}
+          leftIcon={<FileText size={18} color={iconColor.primary} />}
           onPress={() => undefined}
         />
       </View>
@@ -86,7 +88,7 @@ export function SettingsScreen({ navigation }: Props) {
         <Button
           label={t('settings.logout')}
           variant="secondary"
-          leftIcon={<LogOut size={18} color="#0F1115" />}
+          leftIcon={<LogOut size={18} color={iconColor.primary} />}
           onPress={handleLogout}
         />
       </View>

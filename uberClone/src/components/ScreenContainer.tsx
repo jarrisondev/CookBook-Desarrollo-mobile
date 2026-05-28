@@ -17,7 +17,7 @@ export function ScreenContainer({
 }: Props) {
   const Wrapper = scroll ? ScrollView : View;
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-bg dark:bg-dark-bg" edges={['top', 'left', 'right']}>
       <Wrapper
         className={`flex-1 ${padded ? 'px-5' : ''} ${className}`}
         contentContainerClassName={scroll ? 'pb-8' : undefined}

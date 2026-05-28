@@ -22,17 +22,17 @@ export function ListItem({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center bg-surface rounded-2xl px-4 py-3.5 active:opacity-70"
+      className="flex-row items-center bg-surface dark:bg-dark-surface rounded-2xl px-4 py-3.5 active:opacity-70"
     >
       {leftIcon ? (
-        <View className="w-10 h-10 rounded-full bg-ink-100 items-center justify-center mr-3">
+        <View className="w-10 h-10 rounded-full bg-ink-100 dark:bg-ink-700 items-center justify-center mr-3">
           {leftIcon}
         </View>
       ) : null}
       <View className="flex-1">
-        <Text className="text-ink-900 font-semibold text-base">{title}</Text>
+        <Text className="text-ink-900 dark:text-white font-semibold text-base">{title}</Text>
         {subtitle ? (
-          <Text className="text-muted text-xs mt-0.5">{subtitle}</Text>
+          <Text className="text-muted dark:text-ink-400 text-xs mt-0.5">{subtitle}</Text>
         ) : null}
       </View>
       {rightSlot ?? (showChevron && onPress ? <ChevronRight size={18} color="#9CA3AF" /> : null)}

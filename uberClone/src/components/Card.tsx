@@ -11,7 +11,7 @@ type Props = {
 export function Card({ children, className = '', elevated = true }: Props) {
   return (
     <View
-      className={`bg-surface rounded-3xl p-5 ${className}`}
+      className={`bg-surface dark:bg-dark-surface rounded-3xl p-5 ${className}`}
       style={elevated ? shadows.card : undefined}
     >
       {children}

@@ -15,7 +15,7 @@ export function TripInProgressScreen({ navigation }: Props) {
   const destination = useAppSelector((s) => s.ride.destination);
 
   return (
-    <View className="flex-1 bg-bg">
+    <View className="flex-1 bg-bg dark:bg-dark-bg">
       <MapPlaceholder showRoute showPulse={false} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
@@ -39,19 +39,19 @@ export function TripInProgressScreen({ navigation }: Props) {
       </SafeAreaView>
 
       <View className="absolute bottom-0 left-0 right-0">
-        <View className="bg-surface rounded-t-3xl px-5 pt-5 pb-8" style={shadows.cardLg}>
-          <View className="self-center w-12 h-1.5 bg-ink-200 rounded-full mb-5" />
+        <View className="bg-surface dark:bg-dark-surface rounded-t-3xl px-5 pt-5 pb-8" style={shadows.cardLg}>
+          <View className="self-center w-12 h-1.5 bg-ink-200 dark:bg-ink-500 rounded-full mb-5" />
 
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-muted text-xs">{t('inProgress.paymentType')}</Text>
-              <Text className="text-ink-900 font-bold text-lg mt-0.5">
+              <Text className="text-muted dark:text-ink-400 text-xs">{t('inProgress.paymentType')}</Text>
+              <Text className="text-ink-900 dark:text-white font-bold text-lg mt-0.5">
                 {t('inProgress.promo')}
               </Text>
             </View>
             <View className="items-end">
-              <Text className="text-muted text-xs">{t('inProgress.cash')}</Text>
-              <Text className="text-ink-900 font-bold text-lg mt-0.5">
+              <Text className="text-muted dark:text-ink-400 text-xs">{t('inProgress.cash')}</Text>
+              <Text className="text-ink-900 dark:text-white font-bold text-lg mt-0.5">
                 {t('inProgress.applied')}
               </Text>
             </View>

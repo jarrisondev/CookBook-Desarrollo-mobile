@@ -26,20 +26,20 @@ export function TextField({
     ? 'border-danger'
     : focused
       ? 'border-primary-500'
-      : 'border-border';
+      : 'border-border dark:border-dark-border';
 
   return (
     <View className="w-full">
       {label ? (
-        <Text className="text-ink-700 text-sm font-semibold mb-2">{label}</Text>
+        <Text className="text-ink-700 dark:text-ink-200 text-sm font-semibold mb-2">{label}</Text>
       ) : null}
       <View
-        className={`flex-row items-center bg-surface border ${borderColor} rounded-2xl px-4 h-14`}
+        className={`flex-row items-center bg-surface dark:bg-dark-surface border ${borderColor} rounded-2xl px-4 h-14`}
       >
         {leftIcon ? <View className="mr-3">{leftIcon}</View> : null}
         <TextInput
           placeholderTextColor="#9CA3AF"
-          className="flex-1 text-ink-900 text-base"
+          className="flex-1 text-ink-900 dark:text-white text-base"
           onFocus={(e) => {
             setFocused(true);
             onFocus?.(e);
@@ -55,7 +55,7 @@ export function TextField({
       {error ? (
         <Text className="text-danger text-xs mt-1.5">{error}</Text>
       ) : hint ? (
-        <Text className="text-muted text-xs mt-1.5">{hint}</Text>
+        <Text className="text-muted dark:text-ink-400 text-xs mt-1.5">{hint}</Text>
       ) : null}
     </View>
   );

@@ -19,15 +19,15 @@ type Props = {
 
 const containerByVariant: Record<Variant, string> = {
   primary: 'bg-primary-500 active:bg-primary-600',
-  secondary: 'bg-ink-100 active:bg-ink-200',
-  ghost: 'bg-transparent active:bg-ink-100',
+  secondary: 'bg-ink-100 dark:bg-ink-700 active:bg-ink-200 dark:active:bg-ink-500',
+  ghost: 'bg-transparent active:bg-ink-100 dark:active:bg-ink-700',
   danger: 'bg-danger active:opacity-90',
 };
 
 const textByVariant: Record<Variant, string> = {
   primary: 'text-white',
-  secondary: 'text-ink-900',
-  ghost: 'text-ink-900',
+  secondary: 'text-ink-900 dark:text-white',
+  ghost: 'text-ink-900 dark:text-white',
   danger: 'text-white',
 };
 

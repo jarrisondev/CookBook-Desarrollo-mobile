@@ -10,6 +10,7 @@ import {
   IconButton,
   ScreenContainer,
 } from '../../components';
+import { useIconColor } from '../../hooks/useIconColor';
 import { paymentCards } from '../../constants/mockData';
 import { formatCurrency } from '../../utils/format';
 import type { MainStackParamList } from '../../navigation/types';
@@ -26,6 +27,7 @@ const fareBreakdown = {
 
 export function PaymentScreen({ navigation }: Props) {
   const { t } = useTranslation();
+  const iconColor = useIconColor();
   const [method, setMethod] = useState<Method>('card');
   const total = fareBreakdown.base + fareBreakdown.distance + fareBreakdown.discount;
   const defaultCard = paymentCards.find((c) => c.default);
@@ -40,43 +42,43 @@ export function PaymentScreen({ navigation }: Props) {
     <ScreenContainer scroll>
       <View className="flex-row items-center mt-2">
         <IconButton
-          icon={<ChevronLeft size={22} color="#0F1115" />}
+          icon={<ChevronLeft size={22} color={iconColor.primary} />}
           onPress={() => navigation.goBack()}
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 text-xl font-bold ml-2">{t('payment.title')}</Text>
+        <Text className="text-ink-900 dark:text-white text-xl font-bold ml-2">{t('payment.title')}</Text>
       </View>
 
       <View className="items-center mt-8 mb-8">
-        <Text className="text-muted text-sm">{t('payment.totalToPay')}</Text>
-        <Text className="text-ink-900 text-5xl font-bold mt-1">{formatCurrency(total)}</Text>
+        <Text className="text-muted dark:text-ink-400 text-sm">{t('payment.totalToPay')}</Text>
+        <Text className="text-ink-900 dark:text-white text-5xl font-bold mt-1">{formatCurrency(total)}</Text>
       </View>
 
       <Card>
-        <Text className="text-ink-900 font-bold text-base mb-3">{t('payment.fareDetails')}</Text>
+        <Text className="text-ink-900 dark:text-white font-bold text-base mb-3">{t('payment.fareDetails')}</Text>
         <View className="flex-row justify-between py-1.5">
-          <Text className="text-muted">{t('payment.baseFare')}</Text>
-          <Text className="text-ink-900 font-semibold">{formatCurrency(fareBreakdown.base)}</Text>
+          <Text className="text-muted dark:text-ink-400">{t('payment.baseFare')}</Text>
+          <Text className="text-ink-900 dark:text-white font-semibold">{formatCurrency(fareBreakdown.base)}</Text>
         </View>
         <View className="flex-row justify-between py-1.5">
-          <Text className="text-muted">{t('payment.distance')}</Text>
-          <Text className="text-ink-900 font-semibold">{formatCurrency(fareBreakdown.distance)}</Text>
+          <Text className="text-muted dark:text-ink-400">{t('payment.distance')}</Text>
+          <Text className="text-ink-900 dark:text-white font-semibold">{formatCurrency(fareBreakdown.distance)}</Text>
         </View>
         <View className="flex-row justify-between py-1.5">
-          <Text className="text-muted">{t('payment.promo')}</Text>
+          <Text className="text-muted dark:text-ink-400">{t('payment.promo')}</Text>
           <Text className="text-primary-600 font-semibold">
             {formatCurrency(fareBreakdown.discount)}
           </Text>
         </View>
         <Divider className="my-3" />
         <View className="flex-row justify-between">
-          <Text className="text-ink-900 font-bold">{t('payment.total')}</Text>
-          <Text className="text-ink-900 font-bold">{formatCurrency(total)}</Text>
+          <Text className="text-ink-900 dark:text-white font-bold">{t('payment.total')}</Text>
+          <Text className="text-ink-900 dark:text-white font-bold">{formatCurrency(total)}</Text>
         </View>
       </Card>
 
-      <Text className="text-ink-900 font-bold text-base mt-6 mb-3">{t('payment.method')}</Text>
+      <Text className="text-ink-900 dark:text-white font-bold text-base mt-6 mb-3">{t('payment.method')}</Text>
       <View className="flex-row gap-3">
         {methods.map((m) => {
           const Icon = m.icon;
@@ -86,12 +88,12 @@ export function PaymentScreen({ navigation }: Props) {
               key={m.id}
               onPress={() => setMethod(m.id)}
               className={`flex-1 items-center py-4 rounded-2xl border ${
-                isSelected ? 'border-primary-500 bg-primary-50' : 'border-border bg-surface'
+                isSelected ? 'border-primary-500 bg-primary-50' : 'border-border dark:border-dark-border bg-surface dark:bg-dark-surface'
               }`}
             >
               <Icon size={22} color={isSelected ? '#16A34A' : '#6B7280'} />
               <Text
-                className={`text-sm font-semibold mt-2 ${isSelected ? 'text-primary-700' : 'text-ink-700'}`}
+                className={`text-sm font-semibold mt-2 ${isSelected ? 'text-primary-700' : 'text-ink-700 dark:text-ink-200'}`}
               >
                 {m.label}
               </Text>
@@ -102,13 +104,13 @@ export function PaymentScreen({ navigation }: Props) {
 
       {method === 'card' && defaultCard ? (
         <View className="mt-4">
-          <Pressable className="flex-row items-center bg-surface border border-border rounded-2xl px-4 py-3.5">
+          <Pressable className="flex-row items-center bg-surface dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl px-4 py-3.5">
             <View className="w-10 h-10 bg-ink-900 rounded-xl items-center justify-center mr-3">
               <CreditCard size={18} color="#fff" />
             </View>
             <View className="flex-1">
-              <Text className="text-ink-900 font-semibold">•••• {defaultCard.last4}</Text>
-              <Text className="text-muted text-xs">
+              <Text className="text-ink-900 dark:text-white font-semibold">•••• {defaultCard.last4}</Text>
+              <Text className="text-muted dark:text-ink-400 text-xs">
                 {t('payment.expires', { date: defaultCard.expires })}
               </Text>
             </View>

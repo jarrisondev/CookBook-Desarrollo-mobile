@@ -32,7 +32,7 @@ export function PersonalDataTab() {
 
   return (
     <ScrollView
-      className="flex-1 bg-bg"
+      className="flex-1 bg-bg dark:bg-dark-bg"
       contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 24, paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
@@ -43,8 +43,8 @@ export function PersonalDataTab() {
             <Camera size={14} color="#fff" />
           </Pressable>
         </View>
-        <Text className="text-ink-900 font-bold text-lg mt-3">{fullName}</Text>
-        <Text className="text-muted text-sm">{mockUser.level}</Text>
+        <Text className="text-ink-900 dark:text-white font-bold text-lg mt-3">{fullName}</Text>
+        <Text className="text-muted dark:text-ink-400 text-sm">{mockUser.level}</Text>
       </View>
 
       <View className="gap-4">

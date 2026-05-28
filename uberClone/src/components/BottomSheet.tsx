@@ -80,12 +80,12 @@ export function BottomSheet({
 
   return (
     <Animated.View
-      className="absolute left-0 right-0 bg-surface rounded-t-3xl overflow-hidden"
+      className="absolute left-0 right-0 bg-surface dark:bg-dark-surface rounded-t-3xl overflow-hidden"
       style={[{ top: 0, height: SCREEN_HEIGHT }, sheetStyle, shadows.cardLg]}
     >
       <GestureDetector gesture={composed}>
         <View className="pt-2 pb-2 items-center">
-          <View className="w-12 h-1.5 bg-ink-200 rounded-full mt-2 mb-3" />
+          <View className="w-12 h-1.5 bg-ink-200 dark:bg-ink-500 rounded-full mt-2 mb-3" />
         </View>
       </GestureDetector>
       <View className="flex-1 px-5">{children}</View>
