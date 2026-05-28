@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Dimensions, FlatList, Text, View } from 'react-native';
 import { ArrowRight, MapPin, Navigation, Wallet } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../../components';
 import type { RootStackParamList } from '../../navigation/types';
@@ -9,27 +10,16 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
 const { width } = Dimensions.get('window');
 
-const slides = [
-  {
-    icon: MapPin,
-    title: 'Pick your destination',
-    description: 'Search or drop a pin on the map. We will find the fastest route for you.',
-  },
-  {
-    icon: Navigation,
-    title: 'Track your ride live',
-    description: 'See your driver approach in real time and share trip status with friends.',
-  },
-  {
-    icon: Wallet,
-    title: 'Pay your way',
-    description: 'Cash, card or wallet — choose any payment method that works best for you.',
-  },
-];
-
 export function OnboardingScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const listRef = useRef<FlatList>(null);
+
+  const slides = [
+    { icon: MapPin, title: t('onboarding.slide1Title'), description: t('onboarding.slide1Desc') },
+    { icon: Navigation, title: t('onboarding.slide2Title'), description: t('onboarding.slide2Desc') },
+    { icon: Wallet, title: t('onboarding.slide3Title'), description: t('onboarding.slide3Desc') },
+  ];
 
   const handleNext = () => {
     if (index < slides.length - 1) {
@@ -79,7 +69,7 @@ export function OnboardingScreen({ navigation }: Props) {
           ))}
         </View>
         <Button
-          label={index === slides.length - 1 ? 'Get Started' : 'Next'}
+          label={index === slides.length - 1 ? t('onboarding.getStarted') : t('common.next')}
           onPress={handleNext}
           rightIcon={<ArrowRight size={18} color="#fff" />}
         />

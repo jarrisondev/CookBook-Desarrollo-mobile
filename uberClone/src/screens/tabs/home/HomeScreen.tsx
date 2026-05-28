@@ -1,12 +1,32 @@
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Briefcase, ChevronDown, Crosshair, Home as HomeIcon, Menu, Search } from 'lucide-react-native';
-import { Avatar, IconButton, MapPlaceholder } from '../../../components';
+import {
+  Briefcase,
+  ChevronDown,
+  ChevronUp,
+  Crosshair,
+  Home as HomeIcon,
+  Menu,
+  Search,
+} from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  Avatar,
+  BottomSheet,
+  IconButton,
+  MapPlaceholder,
+} from '../../../components';
 import { shadows } from '../../../theme';
-import { mockUser, savedPlaces } from '../../../constants/mockData';
+import { savedPlaces } from '../../../constants/mockData';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { setDestination } from '../../../store/slices/rideSlice';
 import type { TabScreenProps } from '../../../navigation/types';
 
 type Props = TabScreenProps<'Home'>;
+
+const COLLAPSED_HEIGHT = 200;
+const EXPANDED_HEIGHT = 440;
 
 const quickPlaces = savedPlaces.slice(0, 3);
 
@@ -17,6 +37,16 @@ const iconForType = (type: string) => {
 };
 
 export function HomeScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+  const [expanded, setExpanded] = useState(false);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((s) => s.auth.user);
+
+  const handlePickPlace = (label: string, address: string) => {
+    dispatch(setDestination({ label, address }));
+    navigation.navigate('VehicleSelect', { destination: address });
+  };
+
   return (
     <View className="flex-1 bg-bg">
       <MapPlaceholder showPulse />
@@ -29,36 +59,40 @@ export function HomeScreen({ navigation }: Props) {
             style={shadows.card}
           >
             <View className="w-2 h-2 rounded-full bg-success mr-2" />
-            <Text className="text-ink-900 font-semibold text-sm">Online</Text>
+            <Text className="text-ink-900 font-semibold text-sm">{t('common.online')}</Text>
           </View>
           <Pressable>
-            <Avatar name={mockUser.name} size={44} />
+            <Avatar name={user?.fullName ?? 'Guest'} size={44} />
           </Pressable>
         </View>
       </SafeAreaView>
 
-      <View className="absolute bottom-0 left-0 right-0">
-        <View
-          className="bg-surface rounded-t-3xl px-5 pt-5 pb-8"
-          style={shadows.cardLg}
+      <BottomSheet
+        collapsedHeight={COLLAPSED_HEIGHT}
+        expandedHeight={EXPANDED_HEIGHT}
+        initiallyExpanded={false}
+        onChangeExpanded={setExpanded}
+      >
+        <Pressable
+          className="flex-row items-center bg-ink-50 rounded-2xl px-4 h-14"
+          onPress={() => navigation.navigate('SearchDestination')}
         >
-          <View className="self-center w-12 h-1.5 bg-ink-200 rounded-full mb-5" />
-
-          <Pressable
-            className="flex-row items-center bg-ink-50 rounded-2xl px-4 h-14"
-            onPress={() => navigation.navigate('SearchDestination')}
-          >
-            <Search size={20} color="#6B7280" />
-            <Text className="ml-3 text-ink-400 text-base flex-1">Where are you going?</Text>
+          <Search size={20} color="#6B7280" />
+          <Text className="ml-3 text-ink-400 text-base flex-1">{t('home.whereTo')}</Text>
+          {expanded ? (
+            <ChevronUp size={18} color="#9CA3AF" />
+          ) : (
             <ChevronDown size={18} color="#9CA3AF" />
-          </Pressable>
+          )}
+        </Pressable>
 
-          <Text className="text-ink-900 font-bold text-base mt-6 mb-3">Saved places</Text>
+        <View className="mt-6">
+          <Text className="text-ink-900 font-bold text-base mb-3">{t('home.savedPlaces')}</Text>
           <View className="flex-row justify-between">
             {quickPlaces.map((place) => (
               <Pressable
                 key={place.id}
-                onPress={() => navigation.navigate('VehicleSelect', { destination: place.address })}
+                onPress={() => handlePickPlace(place.label, place.address)}
                 className="items-center flex-1"
               >
                 <View className="w-14 h-14 rounded-full bg-ink-900 items-center justify-center mb-2">
@@ -70,7 +104,7 @@ export function HomeScreen({ navigation }: Props) {
             ))}
           </View>
         </View>
-      </View>
+      </BottomSheet>
     </View>
   );
 }

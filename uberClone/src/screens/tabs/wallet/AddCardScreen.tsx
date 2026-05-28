@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Calendar, ChevronLeft, CreditCard, Lock, ScanLine, User } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Button,
@@ -14,6 +15,7 @@ import type { MainStackParamList } from '../../../navigation/types';
 type Props = NativeStackScreenProps<MainStackParamList, 'AddCard'>;
 
 export function AddCardScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [holder, setHolder] = useState('');
   const [number, setNumber] = useState('');
   const [expiry, setExpiry] = useState('');
@@ -22,10 +24,10 @@ export function AddCardScreen({ navigation }: Props) {
 
   const validate = () => {
     const next: typeof errors = {};
-    if (!holder.trim()) next.holder = 'Cardholder name required';
-    if (!/^[0-9]{16}$/.test(number.replace(/\s/g, ''))) next.number = 'Card must be 16 digits';
-    if (!/^[0-9]{2}\s?\/\s?[0-9]{2}$/.test(expiry)) next.expiry = 'Use MM/YY format';
-    if (!/^[0-9]{3,4}$/.test(cvv)) next.cvv = 'CVV is invalid';
+    if (!holder.trim()) next.holder = t('addCard.errors.holderRequired');
+    if (!/^[0-9]{16}$/.test(number.replace(/\s/g, ''))) next.number = t('addCard.errors.numberInvalid');
+    if (!/^[0-9]{2}\s?\/\s?[0-9]{2}$/.test(expiry)) next.expiry = t('addCard.errors.expiryInvalid');
+    if (!/^[0-9]{3,4}$/.test(cvv)) next.cvv = t('addCard.errors.cvvInvalid');
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -44,7 +46,7 @@ export function AddCardScreen({ navigation }: Props) {
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 text-xl font-bold ml-2">Add payment card</Text>
+        <Text className="text-ink-900 text-xl font-bold ml-2">{t('addCard.title')}</Text>
       </View>
 
       <View className="mt-6">
@@ -60,13 +62,13 @@ export function AddCardScreen({ navigation }: Props) {
               </Text>
               <View className="flex-row justify-between mt-3">
                 <View>
-                  <Text className="text-white/60 text-[10px]">CARDHOLDER</Text>
+                  <Text className="text-white/60 text-[10px]">{t('addCard.cardholder')}</Text>
                   <Text className="text-white text-sm font-semibold">
-                    {holder || 'Your name'}
+                    {holder || t('addCard.placeholderCardName')}
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-white/60 text-[10px]">EXPIRES</Text>
+                  <Text className="text-white/60 text-[10px]">{t('addCard.expires')}</Text>
                   <Text className="text-white text-sm font-semibold">{expiry || 'MM/YY'}</Text>
                 </View>
               </View>
@@ -77,16 +79,16 @@ export function AddCardScreen({ navigation }: Props) {
 
       <View className="mt-6 gap-4">
         <TextField
-          label="Cardholder name"
-          placeholder="John Doe"
+          label={t('addCard.cardholderName')}
+          placeholder={t('addCard.cardholderPlaceholder')}
           value={holder}
           onChangeText={setHolder}
           error={errors.holder}
           leftIcon={<User size={20} color="#6B7280" />}
         />
         <TextField
-          label="Card number"
-          placeholder="1234 5678 9012 3456"
+          label={t('addCard.cardNumber')}
+          placeholder={t('addCard.cardNumberPlaceholder')}
           keyboardType="number-pad"
           value={number}
           onChangeText={setNumber}
@@ -96,8 +98,8 @@ export function AddCardScreen({ navigation }: Props) {
         <View className="flex-row gap-3">
           <View className="flex-1">
             <TextField
-              label="Expiry"
-              placeholder="06/27"
+              label={t('addCard.expiry')}
+              placeholder={t('addCard.expiryPlaceholder')}
               value={expiry}
               onChangeText={setExpiry}
               error={errors.expiry}
@@ -106,8 +108,8 @@ export function AddCardScreen({ navigation }: Props) {
           </View>
           <View className="flex-1">
             <TextField
-              label="CVV"
-              placeholder="123"
+              label={t('addCard.cvv')}
+              placeholder={t('addCard.cvvPlaceholder')}
               keyboardType="number-pad"
               secureTextEntry
               value={cvv}
@@ -119,12 +121,12 @@ export function AddCardScreen({ navigation }: Props) {
         </View>
         <Pressable className="flex-row items-center self-start">
           <ScanLine size={18} color="#16A34A" />
-          <Text className="text-primary-600 font-semibold ml-2">Scan card</Text>
+          <Text className="text-primary-600 font-semibold ml-2">{t('addCard.scanCard')}</Text>
         </Pressable>
       </View>
 
       <View className="mt-8">
-        <Button label="Confirm" onPress={handleSubmit} />
+        <Button label={t('common.confirm')} onPress={handleSubmit} />
       </View>
     </ScreenContainer>
   );

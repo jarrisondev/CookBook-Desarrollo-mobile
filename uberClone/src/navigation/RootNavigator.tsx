@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useLanguageSync } from '../i18n/useLanguageSync';
 import { SplashScreen } from '../screens/auth/SplashScreen';
 import { OnboardingScreen } from '../screens/auth/OnboardingScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
@@ -11,6 +12,8 @@ import type { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
+  useLanguageSync();
+
   return (
     <NavigationContainer>
       <Stack.Navigator

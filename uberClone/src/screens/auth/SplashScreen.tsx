@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { Car } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
 export function SplashScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Onboarding');
@@ -20,7 +23,7 @@ export function SplashScreen({ navigation }: Props) {
         <Car size={48} color="#22C55E" />
       </View>
       <Text className="text-white text-4xl font-bold">RideX</Text>
-      <Text className="text-primary-50 text-base mt-2">Your ride, on demand</Text>
+      <Text className="text-primary-50 text-base mt-2">{t('splash.tagline')}</Text>
     </View>
   );
 }

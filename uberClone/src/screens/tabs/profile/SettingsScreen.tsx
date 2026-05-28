@@ -8,6 +8,7 @@ import {
   Shield,
   Trash2,
 } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Button,
@@ -16,11 +17,21 @@ import {
   ListItem,
   ScreenContainer,
 } from '../../../components';
+import { useAppDispatch } from '../../../store';
+import { signOut } from '../../../store/slices/authSlice';
 import type { MainStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Settings'>;
 
 export function SettingsScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(signOut());
+    navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Login' as never }] });
+  };
+
   return (
     <ScreenContainer scroll>
       <View className="flex-row items-center mt-2">
@@ -30,31 +41,31 @@ export function SettingsScreen({ navigation }: Props) {
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 text-xl font-bold ml-2">Settings</Text>
+        <Text className="text-ink-900 text-xl font-bold ml-2">{t('settings.title')}</Text>
       </View>
 
       <View className="mt-6 gap-2">
         <ListItem
-          title="Notifications"
-          subtitle="Push, email, and SMS"
+          title={t('settings.notifications')}
+          subtitle={t('settings.notificationsSubtitle')}
           leftIcon={<Bell size={18} color="#0F1115" />}
           onPress={() => undefined}
         />
         <ListItem
-          title="Privacy"
-          subtitle="Manage data and visibility"
+          title={t('settings.privacy')}
+          subtitle={t('settings.privacySubtitle')}
           leftIcon={<Shield size={18} color="#0F1115" />}
           onPress={() => undefined}
         />
         <ListItem
-          title="Help center"
-          subtitle="FAQs and support"
+          title={t('settings.help')}
+          subtitle={t('settings.helpSubtitle')}
           leftIcon={<CircleHelp size={18} color="#0F1115" />}
           onPress={() => undefined}
         />
         <ListItem
-          title="Terms & policies"
-          subtitle="Read the legal docs"
+          title={t('settings.terms')}
+          subtitle={t('settings.termsSubtitle')}
           leftIcon={<FileText size={18} color="#0F1115" />}
           onPress={() => undefined}
         />
@@ -64,8 +75,8 @@ export function SettingsScreen({ navigation }: Props) {
 
       <View className="gap-2">
         <ListItem
-          title="Delete account"
-          subtitle="Permanently remove your data"
+          title={t('settings.deleteAccount')}
+          subtitle={t('settings.deleteSubtitle')}
           leftIcon={<Trash2 size={18} color="#EF4444" />}
           onPress={() => undefined}
         />
@@ -73,10 +84,10 @@ export function SettingsScreen({ navigation }: Props) {
 
       <View className="mt-8">
         <Button
-          label="Log out"
+          label={t('settings.logout')}
           variant="secondary"
           leftIcon={<LogOut size={18} color="#0F1115" />}
-          onPress={() => navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Login' as never }] })}
+          onPress={handleLogout}
         />
       </View>
     </ScreenContainer>

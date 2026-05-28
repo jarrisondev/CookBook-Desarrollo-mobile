@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Clock, Home as HomeIcon, User, Wallet } from 'lucide-react-native';
 import type { LucideProps } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { HomeScreen } from '../screens/tabs/home/HomeScreen';
 import { WalletScreen } from '../screens/tabs/wallet/WalletScreen';
 import { HistoryScreen } from '../screens/tabs/history/HistoryScreen';
@@ -25,6 +26,7 @@ const renderTabIcon = (Icon: React.ComponentType<LucideProps>, focused: boolean)
 );
 
 export function BottomTabs() {
+  const { t } = useTranslation();
   return (
     <Tab.Navigator
       screenOptions={{
@@ -45,7 +47,7 @@ export function BottomTabs() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ focused }) => renderTabIcon(HomeIcon, focused),
-          tabBarLabel: ({ focused }) => renderTabLabel(focused, 'Home'),
+          tabBarLabel: ({ focused }) => renderTabLabel(focused, t('tabs.home')),
         }}
       />
       <Tab.Screen
@@ -53,7 +55,7 @@ export function BottomTabs() {
         component={WalletScreen}
         options={{
           tabBarIcon: ({ focused }) => renderTabIcon(Wallet, focused),
-          tabBarLabel: ({ focused }) => renderTabLabel(focused, 'Wallet'),
+          tabBarLabel: ({ focused }) => renderTabLabel(focused, t('tabs.wallet')),
         }}
       />
       <Tab.Screen
@@ -61,7 +63,7 @@ export function BottomTabs() {
         component={HistoryScreen}
         options={{
           tabBarIcon: ({ focused }) => renderTabIcon(Clock, focused),
-          tabBarLabel: ({ focused }) => renderTabLabel(focused, 'History'),
+          tabBarLabel: ({ focused }) => renderTabLabel(focused, t('tabs.history')),
         }}
       />
       <Tab.Screen
@@ -69,7 +71,7 @@ export function BottomTabs() {
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused }) => renderTabIcon(User, focused),
-          tabBarLabel: ({ focused }) => renderTabLabel(focused, 'Profile'),
+          tabBarLabel: ({ focused }) => renderTabLabel(focused, t('tabs.profile')),
         }}
       />
     </Tab.Navigator>

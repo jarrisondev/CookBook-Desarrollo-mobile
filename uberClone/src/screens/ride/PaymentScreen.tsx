@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Check, ChevronLeft, CreditCard, DollarSign, Plus, Wallet as WalletIcon } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Button,
@@ -24,14 +25,15 @@ const fareBreakdown = {
 };
 
 export function PaymentScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [method, setMethod] = useState<Method>('card');
   const total = fareBreakdown.base + fareBreakdown.distance + fareBreakdown.discount;
   const defaultCard = paymentCards.find((c) => c.default);
 
   const methods: { id: Method; label: string; icon: typeof CreditCard }[] = [
-    { id: 'cash', label: 'Cash', icon: DollarSign },
-    { id: 'card', label: 'Card', icon: CreditCard },
-    { id: 'wallet', label: 'Wallet', icon: WalletIcon },
+    { id: 'cash', label: t('payment.cash'), icon: DollarSign },
+    { id: 'card', label: t('payment.card'), icon: CreditCard },
+    { id: 'wallet', label: t('payment.wallet'), icon: WalletIcon },
   ];
 
   return (
@@ -43,36 +45,38 @@ export function PaymentScreen({ navigation }: Props) {
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 text-xl font-bold ml-2">Payment</Text>
+        <Text className="text-ink-900 text-xl font-bold ml-2">{t('payment.title')}</Text>
       </View>
 
       <View className="items-center mt-8 mb-8">
-        <Text className="text-muted text-sm">Total to pay</Text>
+        <Text className="text-muted text-sm">{t('payment.totalToPay')}</Text>
         <Text className="text-ink-900 text-5xl font-bold mt-1">{formatCurrency(total)}</Text>
       </View>
 
       <Card>
-        <Text className="text-ink-900 font-bold text-base mb-3">Fare details</Text>
+        <Text className="text-ink-900 font-bold text-base mb-3">{t('payment.fareDetails')}</Text>
         <View className="flex-row justify-between py-1.5">
-          <Text className="text-muted">Base fare</Text>
+          <Text className="text-muted">{t('payment.baseFare')}</Text>
           <Text className="text-ink-900 font-semibold">{formatCurrency(fareBreakdown.base)}</Text>
         </View>
         <View className="flex-row justify-between py-1.5">
-          <Text className="text-muted">Distance</Text>
+          <Text className="text-muted">{t('payment.distance')}</Text>
           <Text className="text-ink-900 font-semibold">{formatCurrency(fareBreakdown.distance)}</Text>
         </View>
         <View className="flex-row justify-between py-1.5">
-          <Text className="text-muted">Promo 15%</Text>
-          <Text className="text-primary-600 font-semibold">{formatCurrency(fareBreakdown.discount)}</Text>
+          <Text className="text-muted">{t('payment.promo')}</Text>
+          <Text className="text-primary-600 font-semibold">
+            {formatCurrency(fareBreakdown.discount)}
+          </Text>
         </View>
         <Divider className="my-3" />
         <View className="flex-row justify-between">
-          <Text className="text-ink-900 font-bold">Total</Text>
+          <Text className="text-ink-900 font-bold">{t('payment.total')}</Text>
           <Text className="text-ink-900 font-bold">{formatCurrency(total)}</Text>
         </View>
       </Card>
 
-      <Text className="text-ink-900 font-bold text-base mt-6 mb-3">Payment method</Text>
+      <Text className="text-ink-900 font-bold text-base mt-6 mb-3">{t('payment.method')}</Text>
       <View className="flex-row gap-3">
         {methods.map((m) => {
           const Icon = m.icon;
@@ -104,7 +108,9 @@ export function PaymentScreen({ navigation }: Props) {
             </View>
             <View className="flex-1">
               <Text className="text-ink-900 font-semibold">•••• {defaultCard.last4}</Text>
-              <Text className="text-muted text-xs">Expires {defaultCard.expires}</Text>
+              <Text className="text-muted text-xs">
+                {t('payment.expires', { date: defaultCard.expires })}
+              </Text>
             </View>
             <Check size={20} color="#16A34A" />
           </Pressable>
@@ -113,13 +119,13 @@ export function PaymentScreen({ navigation }: Props) {
             className="flex-row items-center mt-3"
           >
             <Plus size={18} color="#16A34A" />
-            <Text className="text-primary-600 font-semibold ml-2">Add another card</Text>
+            <Text className="text-primary-600 font-semibold ml-2">{t('payment.addCard')}</Text>
           </Pressable>
         </View>
       ) : null}
 
       <View className="mt-8">
-        <Button label="Confirm Payment" onPress={() => navigation.replace('Rating')} />
+        <Button label={t('payment.confirm')} onPress={() => navigation.replace('Rating')} />
       </View>
     </ScreenContainer>
   );

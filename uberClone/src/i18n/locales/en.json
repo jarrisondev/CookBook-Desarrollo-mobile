@@ -1,0 +1,223 @@
+{
+  "common": {
+    "next": "Next",
+    "back": "Back",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "saveChanges": "Save changes",
+    "submit": "Submit",
+    "logout": "Log out",
+    "search": "Search",
+    "seeAll": "See all",
+    "online": "Online",
+    "delete": "Delete",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "splash": {
+    "tagline": "Your ride, on demand"
+  },
+  "onboarding": {
+    "slide1Title": "Pick your destination",
+    "slide1Desc": "Search or drop a pin on the map. We will find the fastest route for you.",
+    "slide2Title": "Track your ride live",
+    "slide2Desc": "See your driver approach in real time and share trip status with friends.",
+    "slide3Title": "Pay your way",
+    "slide3Desc": "Cash, card or wallet — choose any payment method that works best for you.",
+    "getStarted": "Get Started"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "signInSubtitle": "Sign in to continue your journey",
+    "createAccount": "Create account",
+    "registerSubtitle": "Tell us a bit about you",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordHint": "At least 6 characters",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "John Doe",
+    "phone": "Phone number",
+    "phonePlaceholder": "+1 555 123 4567",
+    "gender": "Gender",
+    "genderPlaceholder": "Select your gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "signIn": "Sign In",
+    "signUp": "Sign up",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account? ",
+    "hasAccount": "Already have an account? ",
+    "errors": {
+      "required": "Required",
+      "invalidEmail": "Invalid email",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Min 6 characters",
+      "phoneInvalid": "Only numbers allowed",
+      "nameMax": "Max 50 characters",
+      "selectGender": "Select a gender"
+    }
+  },
+  "location": {
+    "title": "Enable Location",
+    "description": "Allow access to your location so we can show nearby drivers and pickup spots.",
+    "enable": "Enable Location",
+    "later": "Maybe later"
+  },
+  "home": {
+    "whereTo": "Where are you going?",
+    "savedPlaces": "Saved places",
+    "home": "Home",
+    "office": "Office"
+  },
+  "search": {
+    "title": "Where to?",
+    "placeholder": "Search destination",
+    "suggestions": "Suggestions",
+    "recentAndSaved": "Recent and saved"
+  },
+  "vehicleSelect": {
+    "title": "Choose your ride",
+    "goingTo": "Going to",
+    "seats": "{{count}} seats",
+    "minutes": "{{count}} min",
+    "book": "Book {{label}} · {{price}}",
+    "promo": "Promo 15%"
+  },
+  "tracking": {
+    "minAway": "{{count}} min away",
+    "call": "Call",
+    "message": "Message",
+    "driverArrived": "Driver arrived"
+  },
+  "inProgress": {
+    "dropoff": "Drop off",
+    "paymentType": "Payment type",
+    "cash": "Cash",
+    "promo": "Promo",
+    "applied": "15% Applied",
+    "endTrip": "End Trip"
+  },
+  "payment": {
+    "title": "Payment",
+    "totalToPay": "Total to pay",
+    "fareDetails": "Fare details",
+    "baseFare": "Base fare",
+    "distance": "Distance",
+    "promo": "Promo 15%",
+    "total": "Total",
+    "method": "Payment method",
+    "cash": "Cash",
+    "card": "Card",
+    "wallet": "Wallet",
+    "addCard": "Add another card",
+    "expires": "Expires {{date}}",
+    "confirm": "Confirm Payment"
+  },
+  "rating": {
+    "title": "You arrived!",
+    "description": "How was your trip with {{driver}}?",
+    "tipDriver": "Tip the driver",
+    "noTip": "No tip",
+    "leaveComment": "Leave a comment",
+    "commentPlaceholder": "Write your comment…"
+  },
+  "tabs": {
+    "home": "Home",
+    "wallet": "Wallet",
+    "history": "History",
+    "profile": "Profile"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "subtitle": "Manage your balance and cards",
+    "availableBalance": "Available balance",
+    "thisMonth": "This month",
+    "trips": "Trips",
+    "bonus": "Bonus",
+    "paymentMethods": "Payment methods",
+    "addNewCard": "Add new card",
+    "default": "Default"
+  },
+  "addCard": {
+    "title": "Add payment card",
+    "cardholderName": "Cardholder name",
+    "cardholderPlaceholder": "John Doe",
+    "cardNumber": "Card number",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiry": "Expiry",
+    "expiryPlaceholder": "06/27",
+    "cvv": "CVV",
+    "cvvPlaceholder": "123",
+    "scanCard": "Scan card",
+    "cardholder": "CARDHOLDER",
+    "expires": "EXPIRES",
+    "placeholderCardName": "Your name",
+    "errors": {
+      "holderRequired": "Cardholder name required",
+      "numberInvalid": "Card must be 16 digits",
+      "expiryInvalid": "Use MM/YY format",
+      "cvvInvalid": "CVV is invalid"
+    }
+  },
+  "history": {
+    "title": "Your trips",
+    "subtitle": "Review your recent rides",
+    "all": "All",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "empty": "No trips yet"
+  },
+  "tripDetail": {
+    "pickup": "Pickup",
+    "dropoff": "Drop off",
+    "fareDetails": "Fare details",
+    "baseFare": "Base fare",
+    "distance": "Distance",
+    "total": "Total"
+  },
+  "profile": {
+    "title": "Profile",
+    "personalData": "Personal data",
+    "preferences": "Preferences"
+  },
+  "preferences": {
+    "language": "Language",
+    "spanish": "Español",
+    "english": "English",
+    "notifications": "Notifications",
+    "pushNotifications": "Push notifications",
+    "promoOffers": "Promo offers",
+    "appearance": "Appearance",
+    "darkMode": "Dark mode",
+    "privacy": "Privacy & security",
+    "privacySubtitle": "Manage account security"
+  },
+  "settings": {
+    "title": "Settings",
+    "notifications": "Notifications",
+    "notificationsSubtitle": "Push, email and SMS",
+    "privacy": "Privacy",
+    "privacySubtitle": "Manage data and visibility",
+    "help": "Help center",
+    "helpSubtitle": "FAQs and support",
+    "terms": "Terms & policies",
+    "termsSubtitle": "Read the legal docs",
+    "deleteAccount": "Delete account",
+    "deleteSubtitle": "Permanently remove your data",
+    "logout": "Log out"
+  },
+  "ride": {
+    "categories": {
+      "economic": "Economic",
+      "economicDesc": "Affordable rides for daily use",
+      "xl": "XL",
+      "xlDesc": "Spacious rides for groups",
+      "premium": "Premium",
+      "premiumDesc": "High-end vehicles with top drivers"
+    }
+  }
+}

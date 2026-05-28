@@ -1,25 +1,30 @@
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MapPin } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, MapPlaceholder } from '../../components';
 import { shadows } from '../../theme';
+import { useAppSelector } from '../../store';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'TripInProgress'>;
 
 export function TripInProgressScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+  const destination = useAppSelector((s) => s.ride.destination);
+
   return (
     <View className="flex-1 bg-bg">
       <MapPlaceholder showRoute showPulse={false} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 rounded-2xl px-4 py-3 mt-2" style={shadows.card}>
-          <Text className="text-white/70 text-xs">Drop off</Text>
+          <Text className="text-white/70 text-xs">{t('inProgress.dropoff')}</Text>
           <View className="flex-row items-center mt-0.5">
             <MapPin size={16} color="#22C55E" />
             <Text className="text-white font-semibold ml-2 flex-1" numberOfLines={1}>
-              Tower Bridge, London
+              {destination?.address ?? 'Tower Bridge, London'}
             </Text>
           </View>
         </View>
@@ -27,7 +32,9 @@ export function TripInProgressScreen({ navigation }: Props) {
           className="self-center bg-primary-100 px-3 py-1 rounded-full mt-3"
           style={shadows.card}
         >
-          <Text className="text-primary-700 font-semibold text-sm">4 min</Text>
+          <Text className="text-primary-700 font-semibold text-sm">
+            {t('vehicleSelect.minutes', { count: 4 })}
+          </Text>
         </View>
       </SafeAreaView>
 
@@ -37,17 +44,24 @@ export function TripInProgressScreen({ navigation }: Props) {
 
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-muted text-xs">Payment type</Text>
-              <Text className="text-ink-900 font-bold text-lg mt-0.5">Promo</Text>
+              <Text className="text-muted text-xs">{t('inProgress.paymentType')}</Text>
+              <Text className="text-ink-900 font-bold text-lg mt-0.5">
+                {t('inProgress.promo')}
+              </Text>
             </View>
             <View className="items-end">
-              <Text className="text-muted text-xs">Cash</Text>
-              <Text className="text-ink-900 font-bold text-lg mt-0.5">15% Applied</Text>
+              <Text className="text-muted text-xs">{t('inProgress.cash')}</Text>
+              <Text className="text-ink-900 font-bold text-lg mt-0.5">
+                {t('inProgress.applied')}
+              </Text>
             </View>
           </View>
 
           <View className="mt-6">
-            <Button label="End Trip" onPress={() => navigation.replace('Payment')} />
+            <Button
+              label={t('inProgress.endTrip')}
+              onPress={() => navigation.replace('Payment')}
+            />
           </View>
         </View>
       </View>

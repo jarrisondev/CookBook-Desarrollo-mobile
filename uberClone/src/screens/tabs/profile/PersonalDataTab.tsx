@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Camera } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Button,
@@ -10,6 +11,7 @@ import {
 import { mockUser } from '../../../constants/mockData';
 
 export function PersonalDataTab() {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState(mockUser.name);
   const [phone, setPhone] = useState(mockUser.phone);
   const [email, setEmail] = useState(mockUser.email);
@@ -18,12 +20,12 @@ export function PersonalDataTab() {
 
   const validate = () => {
     const next: typeof errors = {};
-    if (!fullName.trim()) next.fullName = 'Required';
-    else if (fullName.length > 50) next.fullName = 'Max 50 characters';
-    if (!phone.trim()) next.phone = 'Required';
-    else if (!/^[0-9 +()-]+$/.test(phone)) next.phone = 'Only numbers';
-    if (!email.trim()) next.email = 'Required';
-    else if (!/^\S+@\S+\.\S+$/.test(email)) next.email = 'Invalid email';
+    if (!fullName.trim()) next.fullName = t('auth.errors.required');
+    else if (fullName.length > 50) next.fullName = t('auth.errors.nameMax');
+    if (!phone.trim()) next.phone = t('auth.errors.required');
+    else if (!/^[0-9 +()-]+$/.test(phone)) next.phone = t('auth.errors.phoneInvalid');
+    if (!email.trim()) next.email = t('auth.errors.required');
+    else if (!/^\S+@\S+\.\S+$/.test(email)) next.email = t('auth.errors.invalidEmail');
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -47,21 +49,21 @@ export function PersonalDataTab() {
 
       <View className="gap-4">
         <TextField
-          label="Full name"
+          label={t('auth.fullName')}
           value={fullName}
           onChangeText={setFullName}
           error={errors.fullName}
           maxLength={50}
         />
         <TextField
-          label="Phone number"
+          label={t('auth.phone')}
           value={phone}
           onChangeText={setPhone}
           error={errors.phone}
           keyboardType="phone-pad"
         />
         <TextField
-          label="Email"
+          label={t('auth.email')}
           value={email}
           onChangeText={setEmail}
           error={errors.email}
@@ -69,19 +71,19 @@ export function PersonalDataTab() {
           keyboardType="email-address"
         />
         <Select
-          label="Gender"
+          label={t('auth.gender')}
           value={gender}
           onChange={setGender}
           options={[
-            { label: 'Male', value: 'male' },
-            { label: 'Female', value: 'female' },
-            { label: 'Other', value: 'other' },
+            { label: t('auth.male'), value: 'male' },
+            { label: t('auth.female'), value: 'female' },
+            { label: t('auth.other'), value: 'other' },
           ]}
         />
       </View>
 
       <View className="mt-8">
-        <Button label="Save changes" onPress={validate} />
+        <Button label={t('common.saveChanges')} onPress={validate} />
       </View>
     </ScrollView>
   );

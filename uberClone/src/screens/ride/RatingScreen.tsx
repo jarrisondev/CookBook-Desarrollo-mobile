@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Star } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Avatar, Button, ScreenContainer } from '../../components';
 import { mockDriver } from '../../constants/mockData';
+import { resetRide } from '../../store/slices/rideSlice';
+import { useAppDispatch } from '../../store';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Rating'>;
@@ -11,11 +14,14 @@ type Props = NativeStackScreenProps<MainStackParamList, 'Rating'>;
 const tips = [0, 1, 2, 5];
 
 export function RatingScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [rating, setRating] = useState(5);
   const [tipIndex, setTipIndex] = useState(1);
   const [comment, setComment] = useState('');
 
   const handleSubmit = () => {
+    dispatch(resetRide());
     navigation.popToTop();
   };
 
@@ -23,9 +29,9 @@ export function RatingScreen({ navigation }: Props) {
     <ScreenContainer scroll>
       <View className="items-center mt-8">
         <Avatar name={mockDriver.name} size={88} />
-        <Text className="text-ink-900 text-2xl font-bold mt-4">You arrived!</Text>
+        <Text className="text-ink-900 text-2xl font-bold mt-4">{t('rating.title')}</Text>
         <Text className="text-muted text-base mt-2 text-center">
-          How was your trip with {mockDriver.name}?
+          {t('rating.description', { driver: mockDriver.name })}
         </Text>
       </View>
 
@@ -41,7 +47,7 @@ export function RatingScreen({ navigation }: Props) {
         ))}
       </View>
 
-      <Text className="text-ink-900 font-bold text-base mt-10 mb-3">Tip the driver</Text>
+      <Text className="text-ink-900 font-bold text-base mt-10 mb-3">{t('rating.tipDriver')}</Text>
       <View className="flex-row gap-2">
         {tips.map((amount, i) => {
           const isSelected = tipIndex === i;
@@ -54,17 +60,19 @@ export function RatingScreen({ navigation }: Props) {
               }`}
             >
               <Text className={`font-semibold ${isSelected ? 'text-white' : 'text-ink-900'}`}>
-                {amount === 0 ? 'No tip' : `$${amount.toFixed(2)}`}
+                {amount === 0 ? t('rating.noTip') : `$${amount.toFixed(2)}`}
               </Text>
             </Pressable>
           );
         })}
       </View>
 
-      <Text className="text-ink-900 font-bold text-base mt-8 mb-3">Leave a comment</Text>
+      <Text className="text-ink-900 font-bold text-base mt-8 mb-3">
+        {t('rating.leaveComment')}
+      </Text>
       <View className="bg-surface border border-border rounded-2xl px-4 py-3">
         <TextInput
-          placeholder="Write your comment…"
+          placeholder={t('rating.commentPlaceholder')}
           placeholderTextColor="#9CA3AF"
           multiline
           numberOfLines={4}
@@ -76,7 +84,7 @@ export function RatingScreen({ navigation }: Props) {
       </View>
 
       <View className="mt-8">
-        <Button label="Submit" onPress={handleSubmit} />
+        <Button label={t('common.submit')} onPress={handleSubmit} />
       </View>
     </ScreenContainer>
   );

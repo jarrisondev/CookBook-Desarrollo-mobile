@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Settings } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { IconButton } from '../../../components';
 import { PersonalDataTab } from './PersonalDataTab';
@@ -12,10 +13,12 @@ type Props = TabScreenProps<'Profile'>;
 const Tab = createMaterialTopTabNavigator();
 
 export function ProfileScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <View className="flex-row items-center justify-between px-5 py-4">
-        <Text className="text-ink-900 text-2xl font-bold">Profile</Text>
+        <Text className="text-ink-900 text-2xl font-bold">{t('profile.title')}</Text>
         <IconButton
           icon={<Settings size={20} color="#0F1115" />}
           onPress={() => navigation.navigate('Settings')}
@@ -37,8 +40,16 @@ export function ProfileScreen({ navigation }: Props) {
           tabBarIndicatorStyle: { backgroundColor: '#16A34A', height: 3, borderRadius: 3 },
         }}
       >
-        <Tab.Screen name="Personal data" component={PersonalDataTab} />
-        <Tab.Screen name="Preferences" component={PreferencesTab} />
+        <Tab.Screen
+          name="PersonalData"
+          component={PersonalDataTab}
+          options={{ title: t('profile.personalData') }}
+        />
+        <Tab.Screen
+          name="Preferences"
+          component={PreferencesTab}
+          options={{ title: t('profile.preferences') }}
+        />
       </Tab.Navigator>
     </SafeAreaView>
   );

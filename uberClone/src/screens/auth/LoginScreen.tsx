@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, ScreenContainer, TextField } from '../../components';
 import type { RootStackParamList } from '../../navigation/types';
@@ -8,6 +9,7 @@ import type { RootStackParamList } from '../../navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export function LoginScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -15,9 +17,9 @@ export function LoginScreen({ navigation }: Props) {
 
   const validate = () => {
     const next: typeof errors = {};
-    if (!email.trim()) next.email = 'Email is required';
-    else if (!/^\S+@\S+\.\S+$/.test(email)) next.email = 'Invalid email format';
-    if (!password) next.password = 'Password is required';
+    if (!email.trim()) next.email = t('auth.errors.required');
+    else if (!/^\S+@\S+\.\S+$/.test(email)) next.email = t('auth.errors.invalidEmail');
+    if (!password) next.password = t('auth.errors.passwordRequired');
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -30,14 +32,14 @@ export function LoginScreen({ navigation }: Props) {
   return (
     <ScreenContainer scroll>
       <View className="mt-12">
-        <Text className="text-ink-900 text-3xl font-bold">Welcome back</Text>
-        <Text className="text-muted text-base mt-2">Sign in to continue your journey</Text>
+        <Text className="text-ink-900 text-3xl font-bold">{t('auth.welcomeBack')}</Text>
+        <Text className="text-muted text-base mt-2">{t('auth.signInSubtitle')}</Text>
       </View>
 
       <View className="mt-10 gap-4">
         <TextField
-          label="Email"
-          placeholder="you@example.com"
+          label={t('auth.email')}
+          placeholder={t('auth.emailPlaceholder')}
           autoCapitalize="none"
           keyboardType="email-address"
           value={email}
@@ -46,8 +48,8 @@ export function LoginScreen({ navigation }: Props) {
           leftIcon={<Mail size={20} color="#6B7280" />}
         />
         <TextField
-          label="Password"
-          placeholder="••••••••"
+          label={t('auth.password')}
+          placeholder={t('auth.passwordPlaceholder')}
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
@@ -64,18 +66,18 @@ export function LoginScreen({ navigation }: Props) {
           }
         />
         <Pressable className="self-end">
-          <Text className="text-primary-600 font-semibold text-sm">Forgot password?</Text>
+          <Text className="text-primary-600 font-semibold text-sm">{t('auth.forgotPassword')}</Text>
         </Pressable>
       </View>
 
       <View className="mt-8">
-        <Button label="Sign In" onPress={handleSubmit} />
+        <Button label={t('auth.signIn')} onPress={handleSubmit} />
       </View>
 
       <View className="flex-row items-center justify-center mt-8">
-        <Text className="text-muted text-sm">Don’t have an account? </Text>
+        <Text className="text-muted text-sm">{t('auth.noAccount')}</Text>
         <Pressable onPress={() => navigation.navigate('Register')}>
-          <Text className="text-primary-600 font-semibold text-sm">Sign up</Text>
+          <Text className="text-primary-600 font-semibold text-sm">{t('auth.signUp')}</Text>
         </Pressable>
       </View>
     </ScreenContainer>

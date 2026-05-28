@@ -1,0 +1,223 @@
+{
+  "common": {
+    "next": "Siguiente",
+    "back": "Atrás",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Guardar",
+    "saveChanges": "Guardar cambios",
+    "submit": "Enviar",
+    "logout": "Cerrar sesión",
+    "search": "Buscar",
+    "seeAll": "Ver todo",
+    "online": "En línea",
+    "delete": "Eliminar",
+    "completed": "Completado",
+    "cancelled": "Cancelado"
+  },
+  "splash": {
+    "tagline": "Tu viaje, cuando quieras"
+  },
+  "onboarding": {
+    "slide1Title": "Elige tu destino",
+    "slide1Desc": "Busca o suelta un pin en el mapa. Encontramos la ruta más rápida para ti.",
+    "slide2Title": "Rastrea tu viaje en vivo",
+    "slide2Desc": "Mira al conductor acercarse en tiempo real y comparte el estado del viaje.",
+    "slide3Title": "Paga como prefieras",
+    "slide3Desc": "Efectivo, tarjeta o cartera — elige el método de pago que mejor te funcione.",
+    "getStarted": "Empezar"
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido de vuelta",
+    "signInSubtitle": "Inicia sesión para continuar tu viaje",
+    "createAccount": "Crear cuenta",
+    "registerSubtitle": "Cuéntanos un poco sobre ti",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "passwordHint": "Al menos 6 caracteres",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Juan Pérez",
+    "phone": "Número de celular",
+    "phonePlaceholder": "+57 300 123 4567",
+    "gender": "Género",
+    "genderPlaceholder": "Selecciona tu género",
+    "male": "Masculino",
+    "female": "Femenino",
+    "other": "Otro",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta? ",
+    "hasAccount": "¿Ya tienes cuenta? ",
+    "errors": {
+      "required": "Campo obligatorio",
+      "invalidEmail": "Correo inválido",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordMin": "Mínimo 6 caracteres",
+      "phoneInvalid": "Solo se permiten números",
+      "nameMax": "Máximo 50 caracteres",
+      "selectGender": "Selecciona un género"
+    }
+  },
+  "location": {
+    "title": "Activa tu ubicación",
+    "description": "Permite acceso a tu ubicación para mostrarte conductores y puntos de recogida cercanos.",
+    "enable": "Activar ubicación",
+    "later": "Más tarde"
+  },
+  "home": {
+    "whereTo": "¿A dónde vas?",
+    "savedPlaces": "Lugares guardados",
+    "home": "Casa",
+    "office": "Oficina"
+  },
+  "search": {
+    "title": "¿A dónde?",
+    "placeholder": "Buscar destino",
+    "suggestions": "Sugerencias",
+    "recentAndSaved": "Recientes y guardados"
+  },
+  "vehicleSelect": {
+    "title": "Elige tu viaje",
+    "goingTo": "Vas a",
+    "seats": "{{count}} asientos",
+    "minutes": "{{count}} min",
+    "book": "Pedir {{label}} · {{price}}",
+    "promo": "Promo 15%"
+  },
+  "tracking": {
+    "minAway": "{{count}} min de distancia",
+    "call": "Llamar",
+    "message": "Mensaje",
+    "driverArrived": "Conductor llegó"
+  },
+  "inProgress": {
+    "dropoff": "Destino",
+    "paymentType": "Tipo de pago",
+    "cash": "Efectivo",
+    "promo": "Promo",
+    "applied": "15% Aplicado",
+    "endTrip": "Terminar viaje"
+  },
+  "payment": {
+    "title": "Pago",
+    "totalToPay": "Total a pagar",
+    "fareDetails": "Detalle de tarifa",
+    "baseFare": "Tarifa base",
+    "distance": "Distancia",
+    "promo": "Promo 15%",
+    "total": "Total",
+    "method": "Método de pago",
+    "cash": "Efectivo",
+    "card": "Tarjeta",
+    "wallet": "Cartera",
+    "addCard": "Agregar otra tarjeta",
+    "expires": "Vence {{date}}",
+    "confirm": "Confirmar pago"
+  },
+  "rating": {
+    "title": "¡Llegaste!",
+    "description": "¿Cómo fue tu viaje con {{driver}}?",
+    "tipDriver": "Dale propina al conductor",
+    "noTip": "Sin propina",
+    "leaveComment": "Deja un comentario",
+    "commentPlaceholder": "Escribe tu comentario…"
+  },
+  "tabs": {
+    "home": "Inicio",
+    "wallet": "Cartera",
+    "history": "Historial",
+    "profile": "Perfil"
+  },
+  "wallet": {
+    "title": "Cartera",
+    "subtitle": "Administra tu saldo y tarjetas",
+    "availableBalance": "Saldo disponible",
+    "thisMonth": "Este mes",
+    "trips": "Viajes",
+    "bonus": "Bono",
+    "paymentMethods": "Métodos de pago",
+    "addNewCard": "Agregar nueva tarjeta",
+    "default": "Predeterminada"
+  },
+  "addCard": {
+    "title": "Agregar tarjeta de pago",
+    "cardholderName": "Nombre del titular",
+    "cardholderPlaceholder": "Juan Pérez",
+    "cardNumber": "Número de tarjeta",
+    "cardNumberPlaceholder": "1234 5678 9012 3456",
+    "expiry": "Vencimiento",
+    "expiryPlaceholder": "06/27",
+    "cvv": "CVV",
+    "cvvPlaceholder": "123",
+    "scanCard": "Escanear tarjeta",
+    "cardholder": "TITULAR",
+    "expires": "VENCE",
+    "placeholderCardName": "Tu nombre",
+    "errors": {
+      "holderRequired": "Nombre del titular obligatorio",
+      "numberInvalid": "La tarjeta debe tener 16 dígitos",
+      "expiryInvalid": "Usa formato MM/AA",
+      "cvvInvalid": "CVV inválido"
+    }
+  },
+  "history": {
+    "title": "Tus viajes",
+    "subtitle": "Revisa tus viajes recientes",
+    "all": "Todos",
+    "completed": "Completados",
+    "cancelled": "Cancelados",
+    "empty": "Aún no hay viajes"
+  },
+  "tripDetail": {
+    "pickup": "Recogida",
+    "dropoff": "Destino",
+    "fareDetails": "Detalle de tarifa",
+    "baseFare": "Tarifa base",
+    "distance": "Distancia",
+    "total": "Total"
+  },
+  "profile": {
+    "title": "Perfil",
+    "personalData": "Datos personales",
+    "preferences": "Preferencias"
+  },
+  "preferences": {
+    "language": "Idioma",
+    "spanish": "Español",
+    "english": "English",
+    "notifications": "Notificaciones",
+    "pushNotifications": "Notificaciones push",
+    "promoOffers": "Ofertas y promociones",
+    "appearance": "Apariencia",
+    "darkMode": "Modo oscuro",
+    "privacy": "Privacidad y seguridad",
+    "privacySubtitle": "Administra la seguridad de tu cuenta"
+  },
+  "settings": {
+    "title": "Configuración",
+    "notifications": "Notificaciones",
+    "notificationsSubtitle": "Push, correo y SMS",
+    "privacy": "Privacidad",
+    "privacySubtitle": "Administra datos y visibilidad",
+    "help": "Centro de ayuda",
+    "helpSubtitle": "Preguntas y soporte",
+    "terms": "Términos y políticas",
+    "termsSubtitle": "Lee los documentos legales",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteSubtitle": "Borrar permanentemente tus datos",
+    "logout": "Cerrar sesión"
+  },
+  "ride": {
+    "categories": {
+      "economic": "Económico",
+      "economicDesc": "Viajes accesibles para el día a día",
+      "xl": "XL",
+      "xlDesc": "Viajes amplios para grupos",
+      "premium": "Premium",
+      "premiumDesc": "Vehículos de alta gama con conductores premium"
+    }
+  }
+}

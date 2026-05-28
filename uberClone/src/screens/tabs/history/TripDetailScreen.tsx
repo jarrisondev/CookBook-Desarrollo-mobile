@@ -1,5 +1,6 @@
 import { Text, View } from 'react-native';
 import { ChevronLeft, MapPin } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Avatar,
@@ -16,7 +17,8 @@ import type { MainStackParamList } from '../../../navigation/types';
 type Props = NativeStackScreenProps<MainStackParamList, 'TripDetail'>;
 
 export function TripDetailScreen({ navigation, route }: Props) {
-  const trip = tripHistory.find((t) => t.id === route.params.tripId) ?? tripHistory[0];
+  const { t } = useTranslation();
+  const trip = tripHistory.find((tt) => tt.id === route.params.tripId) ?? tripHistory[0];
 
   return (
     <ScreenContainer scroll padded={false}>
@@ -49,7 +51,7 @@ export function TripDetailScreen({ navigation, route }: Props) {
                 <MapPin size={16} color="#16A34A" />
               </View>
               <View className="flex-1">
-                <Text className="text-muted text-xs">Pickup</Text>
+                <Text className="text-muted text-xs">{t('tripDetail.pickup')}</Text>
                 <Text className="text-ink-900 font-semibold">{trip.from}</Text>
               </View>
             </View>
@@ -58,7 +60,7 @@ export function TripDetailScreen({ navigation, route }: Props) {
                 <MapPin size={16} color="#fff" />
               </View>
               <View className="flex-1">
-                <Text className="text-muted text-xs">Drop off</Text>
+                <Text className="text-muted text-xs">{t('tripDetail.dropoff')}</Text>
                 <Text className="text-ink-900 font-semibold">{trip.to}</Text>
               </View>
             </View>
@@ -67,18 +69,20 @@ export function TripDetailScreen({ navigation, route }: Props) {
 
         <View className="mt-4">
           <Card>
-            <Text className="text-ink-900 font-bold mb-3">Fare details</Text>
+            <Text className="text-ink-900 font-bold mb-3">{t('tripDetail.fareDetails')}</Text>
             <View className="flex-row justify-between py-1.5">
-              <Text className="text-muted">Base fare</Text>
+              <Text className="text-muted">{t('tripDetail.baseFare')}</Text>
               <Text className="text-ink-900 font-semibold">{formatCurrency(4.5)}</Text>
             </View>
             <View className="flex-row justify-between py-1.5">
-              <Text className="text-muted">Distance</Text>
-              <Text className="text-ink-900 font-semibold">{formatCurrency(trip.price - 4.5)}</Text>
+              <Text className="text-muted">{t('tripDetail.distance')}</Text>
+              <Text className="text-ink-900 font-semibold">
+                {formatCurrency(trip.price - 4.5)}
+              </Text>
             </View>
             <Divider className="my-3" />
             <View className="flex-row justify-between">
-              <Text className="text-ink-900 font-bold">Total</Text>
+              <Text className="text-ink-900 font-bold">{t('tripDetail.total')}</Text>
               <Text className="text-ink-900 font-bold">{formatCurrency(trip.price)}</Text>
             </View>
           </Card>

@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, MessageCircle, Phone, Star, X } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Avatar, Button, IconButton, MapPlaceholder } from '../../components';
 import { shadows } from '../../theme';
@@ -10,6 +11,8 @@ import type { MainStackParamList } from '../../navigation/types';
 type Props = NativeStackScreenProps<MainStackParamList, 'RideTracking'>;
 
 export function RideTrackingScreen({ navigation }: Props) {
+  const { t } = useTranslation();
+
   return (
     <View className="flex-1 bg-bg">
       <MapPlaceholder showRoute showPulse={false} />
@@ -20,11 +23,10 @@ export function RideTrackingScreen({ navigation }: Props) {
             icon={<ChevronLeft size={22} color="#0F1115" />}
             onPress={() => navigation.goBack()}
           />
-          <View
-            className="bg-ink-900 px-4 py-1.5 rounded-full"
-            style={shadows.card}
-          >
-            <Text className="text-white font-semibold text-sm">{mockDriver.etaMin} min away</Text>
+          <View className="bg-ink-900 px-4 py-1.5 rounded-full" style={shadows.card}>
+            <Text className="text-white font-semibold text-sm">
+              {t('tracking.minAway', { count: mockDriver.etaMin })}
+            </Text>
           </View>
           <View style={{ width: 44 }} />
         </View>
@@ -54,7 +56,7 @@ export function RideTrackingScreen({ navigation }: Props) {
                 onPress={() => undefined}
                 size={52}
               />
-              <Text className="text-ink-900 text-xs font-semibold mt-2">Call</Text>
+              <Text className="text-ink-900 text-xs font-semibold mt-2">{t('tracking.call')}</Text>
             </View>
             <View className="items-center flex-1">
               <IconButton
@@ -62,7 +64,9 @@ export function RideTrackingScreen({ navigation }: Props) {
                 onPress={() => undefined}
                 size={52}
               />
-              <Text className="text-ink-900 text-xs font-semibold mt-2">Message</Text>
+              <Text className="text-ink-900 text-xs font-semibold mt-2">
+                {t('tracking.message')}
+              </Text>
             </View>
             <View className="items-center flex-1">
               <IconButton
@@ -70,13 +74,15 @@ export function RideTrackingScreen({ navigation }: Props) {
                 onPress={() => navigation.goBack()}
                 size={52}
               />
-              <Text className="text-ink-900 text-xs font-semibold mt-2">Cancel</Text>
+              <Text className="text-ink-900 text-xs font-semibold mt-2">
+                {t('common.cancel')}
+              </Text>
             </View>
           </View>
 
           <View className="mt-6">
             <Button
-              label="Driver arrived"
+              label={t('tracking.driverArrived')}
               onPress={() => navigation.replace('TripInProgress')}
             />
           </View>

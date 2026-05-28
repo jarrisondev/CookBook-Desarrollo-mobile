@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import { Car } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { Chip, ScreenContainer } from '../../../components';
 import { shadows } from '../../../theme';
 import { tripHistory } from '../../../constants/mockData';
@@ -11,22 +12,23 @@ type Props = TabScreenProps<'History'>;
 
 type Filter = 'all' | 'completed' | 'cancelled';
 
-const filters: { id: Filter; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'completed', label: 'Completed' },
-  { id: 'cancelled', label: 'Cancelled' },
-];
-
 export function HistoryScreen({ navigation }: Props) {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<Filter>('all');
 
-  const data = tripHistory.filter((t) => (filter === 'all' ? true : t.status === filter));
+  const filters: { id: Filter; label: string }[] = [
+    { id: 'all', label: t('history.all') },
+    { id: 'completed', label: t('history.completed') },
+    { id: 'cancelled', label: t('history.cancelled') },
+  ];
+
+  const data = tripHistory.filter((tt) => (filter === 'all' ? true : tt.status === filter));
 
   return (
     <ScreenContainer>
       <View className="mt-4">
-        <Text className="text-ink-900 text-2xl font-bold">Your trips</Text>
-        <Text className="text-muted text-sm mt-1">Review your recent rides</Text>
+        <Text className="text-ink-900 text-2xl font-bold">{t('history.title')}</Text>
+        <Text className="text-muted text-sm mt-1">{t('history.subtitle')}</Text>
       </View>
 
       <View className="flex-row gap-2 mt-5 mb-2">
@@ -66,7 +68,7 @@ export function HistoryScreen({ navigation }: Props) {
                     item.status === 'completed' ? 'text-primary-600' : 'text-danger'
                   }`}
                 >
-                  {item.status}
+                  {item.status === 'completed' ? t('common.completed') : t('common.cancelled')}
                 </Text>
               </View>
             </View>
@@ -74,7 +76,7 @@ export function HistoryScreen({ navigation }: Props) {
         )}
         ListEmptyComponent={
           <View className="items-center justify-center mt-20">
-            <Text className="text-muted">No trips yet</Text>
+            <Text className="text-muted">{t('history.empty')}</Text>
           </View>
         }
       />
