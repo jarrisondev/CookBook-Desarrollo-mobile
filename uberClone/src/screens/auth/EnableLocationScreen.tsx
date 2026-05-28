@@ -1,0 +1,30 @@
+import { Text, View } from 'react-native';
+import { MapPin } from 'lucide-react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Button, MapPlaceholder } from '../../components';
+import type { RootStackParamList } from '../../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'EnableLocation'>;
+
+export function EnableLocationScreen({ navigation }: Props) {
+  const handleEnable = () => navigation.replace('Main');
+
+  return (
+    <View className="flex-1 bg-bg">
+      <MapPlaceholder showPulse={false} />
+      <View className="flex-1 items-center justify-center px-8">
+        <View className="w-36 h-36 rounded-full bg-primary-100 items-center justify-center mb-8">
+          <MapPin size={72} color="#16A34A" strokeWidth={1.5} />
+        </View>
+        <Text className="text-ink-900 text-2xl font-bold text-center">Enable Location</Text>
+        <Text className="text-muted text-base text-center mt-3 leading-6">
+          Allow access to your location so we can show nearby drivers and pickup spots.
+        </Text>
+      </View>
+      <View className="px-6 pb-10 gap-3">
+        <Button label="Enable Location" onPress={handleEnable} />
+        <Button label="Maybe later" variant="ghost" onPress={handleEnable} />
+      </View>
+    </View>
+  );
+}
