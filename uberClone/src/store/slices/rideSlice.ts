@@ -1,31 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-
-export type RideCategoryId = 'economic' | 'xl' | 'premium';
-export type RideStatus = 'idle' | 'searching' | 'matched' | 'inProgress' | 'completed' | 'cancelled';
-
-export type RidePoint = {
-  label: string;
-  address: string;
-  lat?: number;
-  lng?: number;
-};
+import type { PaymentMethod, RideCategory, RidePoint } from '../../models';
 
 type RideState = {
-  status: RideStatus;
+  currentRideId: string | null;
   pickup: RidePoint | null;
   destination: RidePoint | null;
-  selectedCategory: RideCategoryId;
+  selectedCategory: RideCategory;
   fareEstimate: number;
-  driverId?: string;
+  paymentMethod: PaymentMethod;
 };
 
 const initialState: RideState = {
-  status: 'idle',
+  currentRideId: null,
   pickup: null,
   destination: null,
   selectedCategory: 'economic',
   fareEstimate: 0,
+  paymentMethod: 'cash',
 };
 
 const rideSlice = createSlice({
@@ -38,14 +30,17 @@ const rideSlice = createSlice({
     setDestination(state, action: PayloadAction<RidePoint | null>) {
       state.destination = action.payload;
     },
-    setCategory(state, action: PayloadAction<RideCategoryId>) {
+    setCategory(state, action: PayloadAction<RideCategory>) {
       state.selectedCategory = action.payload;
     },
     setFareEstimate(state, action: PayloadAction<number>) {
       state.fareEstimate = action.payload;
     },
-    setStatus(state, action: PayloadAction<RideStatus>) {
-      state.status = action.payload;
+    setPaymentMethod(state, action: PayloadAction<PaymentMethod>) {
+      state.paymentMethod = action.payload;
+    },
+    setCurrentRideId(state, action: PayloadAction<string | null>) {
+      state.currentRideId = action.payload;
     },
     resetRide() {
       return initialState;
@@ -58,7 +53,8 @@ export const {
   setDestination,
   setCategory,
   setFareEstimate,
-  setStatus,
+  setPaymentMethod,
+  setCurrentRideId,
   resetRide,
 } = rideSlice.actions;
 export const rideReducer = rideSlice.reducer;

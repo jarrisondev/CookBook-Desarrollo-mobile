@@ -1,28 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-
-export type Gender = 'male' | 'female' | 'other';
-export type UserRole = 'rider' | 'driver';
-
-export type UserProfile = {
-  id: string;
-  fullName: string;
-  email: string;
-  phone: string;
-  gender: Gender;
-  role: UserRole;
-  photoUri?: string;
-  level: string;
-  balance: number;
-};
+import type { User } from '../../models';
 
 type AuthState = {
-  isAuthenticated: boolean;
-  user: UserProfile | null;
+  status: 'loading' | 'unauthenticated' | 'authenticated';
+  user: User | null;
 };
 
 const initialState: AuthState = {
-  isAuthenticated: false,
+  status: 'loading',
   user: null,
 };
 
@@ -30,15 +16,19 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    signIn(state, action: PayloadAction<UserProfile>) {
-      state.isAuthenticated = true;
+    authResolved(state, action: PayloadAction<User | null>) {
       state.user = action.payload;
+      state.status = action.payload ? 'authenticated' : 'unauthenticated';
     },
-    signOut(state) {
-      state.isAuthenticated = false;
+    signedIn(state, action: PayloadAction<User>) {
+      state.user = action.payload;
+      state.status = 'authenticated';
+    },
+    signedOut(state) {
       state.user = null;
+      state.status = 'unauthenticated';
     },
-    updateProfile(state, action: PayloadAction<Partial<UserProfile>>) {
+    profileUpdated(state, action: PayloadAction<Partial<User>>) {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
       }
@@ -46,5 +36,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { signIn, signOut, updateProfile } = authSlice.actions;
+export const { authResolved, signedIn, signedOut, profileUpdated } = authSlice.actions;
 export const authReducer = authSlice.reducer;
+export type { User };
+export type UserRole = User['role'];
