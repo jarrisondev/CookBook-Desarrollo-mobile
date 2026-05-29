@@ -85,7 +85,8 @@
     "title": "¿A dónde?",
     "placeholder": "Buscar destino",
     "suggestions": "Sugerencias",
-    "recentAndSaved": "Recientes y guardados"
+    "recentAndSaved": "Recientes y guardados",
+    "emptyHint": "Cuando hagas un viaje, los destinos quedarán aquí"
   },
   "vehicleSelect": {
     "title": "Elige tu viaje",
@@ -164,7 +165,13 @@
     "bonus": "Bono",
     "paymentMethods": "Métodos de pago",
     "addNewCard": "Agregar nueva tarjeta",
-    "default": "Predeterminada"
+    "default": "Predeterminada",
+    "noCards": "Aún no tienes tarjetas guardadas",
+    "cardActions": "Tarjeta •••• {{last4}}",
+    "makeDefault": "Hacer predeterminada",
+    "removeCard": "Eliminar tarjeta",
+    "removeConfirm": "¿Eliminar la tarjeta •••• {{last4}}?",
+    "actionFailed": "No pudimos completar la acción"
   },
   "addCard": {
     "title": "Agregar tarjeta de pago",
@@ -173,18 +180,22 @@
     "cardNumber": "Número de tarjeta",
     "cardNumberPlaceholder": "1234 5678 9012 3456",
     "expiry": "Vencimiento",
-    "expiryPlaceholder": "06/27",
+    "expiryPlaceholder": "MM/AA",
     "cvv": "CVV",
     "cvvPlaceholder": "123",
     "scanCard": "Escanear tarjeta",
     "cardholder": "TITULAR",
     "expires": "VENCE",
     "placeholderCardName": "Tu nombre",
+    "success": "Tarjeta guardada",
+    "successMessage": "Tu tarjeta •••• {{last4}} quedó agregada",
     "errors": {
       "holderRequired": "Nombre del titular obligatorio",
       "numberInvalid": "La tarjeta debe tener 16 dígitos",
       "expiryInvalid": "Usa formato MM/AA",
-      "cvvInvalid": "CVV inválido"
+      "expiryMonth": "Mes inválido (01-12)",
+      "cvvInvalid": "CVV inválido",
+      "saveFailed": "No pudimos guardar la tarjeta"
     }
   },
   "history": {
@@ -344,7 +355,8 @@
       "vehicleSeats": "Asientos",
       "vehicleCategory": "Categoría",
       "totalRides": "Viajes totales",
-      "yearsActive": "Años activo"
+      "yearsActive": "Años activo",
+      "noVehicle": "Aún no has registrado un vehículo"
     }
   }
 }

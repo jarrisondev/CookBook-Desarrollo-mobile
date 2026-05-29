@@ -4,8 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import {
   Avatar,
-  BottomSheet,
-  Card,
   Divider,
   MapPlaceholder,
 } from '../../../components';
@@ -25,9 +23,6 @@ import type { Ride } from '../../../models';
 import type { DriverTabScreenProps } from '../../../navigation/types';
 
 type Props = DriverTabScreenProps<'DriverHome'>;
-
-const COLLAPSED_HEIGHT = 220;
-const EXPANDED_HEIGHT = 460;
 
 const todaysEarnings = weeklyEarnings[weeklyEarnings.length - 1];
 
@@ -102,85 +97,63 @@ export function DriverHomeScreen({ navigation }: Props) {
         ) : null}
       </SafeAreaView>
 
-      <BottomSheet collapsedHeight={COLLAPSED_HEIGHT} expandedHeight={EXPANDED_HEIGHT}>
-        <View className="flex-row items-center justify-between mb-4">
-          <View>
-            <Text className="text-muted dark:text-ink-400 text-xs">
-              {t('driver.home.balance')}
-            </Text>
-            <Text className="text-ink-900 dark:text-white text-2xl font-bold mt-0.5">
-              {formatCurrency(user?.balance ?? 0)}
-            </Text>
-          </View>
-          <View className="items-end">
-            <Avatar name={user?.fullName ?? '?'} size={44} />
-            <Text className="text-ink-900 dark:text-white font-semibold text-sm mt-1">
-              {user?.fullName.split(' ')[0]}
-            </Text>
-            <Text className="text-muted dark:text-ink-400 text-[10px]">{user?.level}</Text>
-          </View>
-        </View>
-
-        <Divider />
-
-        <View className="flex-row justify-between mt-4">
-          <View>
-            <Text className="text-muted dark:text-ink-400 text-xs">
-              {t('driver.home.todayEarnings')}
-            </Text>
-            <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
-              {formatCurrency(todaysEarnings.amount)}
-            </Text>
-          </View>
-          <View>
-            <Text className="text-muted dark:text-ink-400 text-xs">
-              {t('driver.home.todayRides')}
-            </Text>
-            <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
-              {todaysEarnings.rides}
-            </Text>
-          </View>
-          <View>
-            <Text className="text-muted dark:text-ink-400 text-xs">
-              {t('driver.stats.rating')}
-            </Text>
-            <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
-              {(user?.rating ?? driverStats.rating).toFixed(1)} ★
-            </Text>
-          </View>
-        </View>
-
-        <View className="mt-6">
-          <Card elevated={false} className="bg-ink-900">
-            <View className="flex-row justify-between">
-              <View className="items-center flex-1">
-                <Text className="text-white text-lg font-bold">
-                  {driverStats.acceptedPercent}%
-                </Text>
-                <Text className="text-white/70 text-xs">
-                  {t('driver.stats.accepted')}
-                </Text>
-              </View>
-              <View className="items-center flex-1">
-                <Text className="text-white text-lg font-bold">
-                  {(user?.rating ?? driverStats.rating).toFixed(1)}
-                </Text>
-                <Text className="text-white/70 text-xs">
-                  {t('driver.stats.rating')}
-                </Text>
-              </View>
-              <View className="items-center flex-1">
-                <Text className="text-white text-lg font-bold">
-                  {driverStats.cancelledPercent}%
-                </Text>
-                <Text className="text-white/70 text-xs">
-                  {t('driver.stats.cancelled')}
-                </Text>
-              </View>
+      <View className="absolute bottom-0 left-0 right-0">
+        <View
+          className="bg-surface dark:bg-dark-surface rounded-t-3xl px-5 pt-5 pb-8"
+          style={shadows.cardLg}
+        >
+          <View className="flex-row items-center justify-between mb-3">
+            <View>
+              <Text className="text-muted dark:text-ink-400 text-[11px]">
+                {t('driver.home.balance')}
+              </Text>
+              <Text className="text-ink-900 dark:text-white text-2xl font-bold mt-0.5">
+                {formatCurrency(user?.balance ?? 0)}
+              </Text>
             </View>
-          </Card>
+            <View className="flex-row items-center">
+              <View className="items-end mr-2.5">
+                <Text className="text-ink-900 dark:text-white font-semibold text-sm">
+                  {user?.fullName.split(' ')[0]}
+                </Text>
+                <Text className="text-muted dark:text-ink-400 text-[10px]">
+                  {user?.level}
+                </Text>
+              </View>
+              <Avatar name={user?.fullName ?? '?'} size={40} />
+            </View>
+          </View>
+
+          <Divider />
+
+          <View className="flex-row justify-between mt-3">
+            <View>
+              <Text className="text-muted dark:text-ink-400 text-[11px]">
+                {t('driver.home.todayEarnings')}
+              </Text>
+              <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
+                {formatCurrency(todaysEarnings.amount)}
+              </Text>
+            </View>
+            <View>
+              <Text className="text-muted dark:text-ink-400 text-[11px]">
+                {t('driver.home.todayRides')}
+              </Text>
+              <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
+                {todaysEarnings.rides}
+              </Text>
+            </View>
+            <View>
+              <Text className="text-muted dark:text-ink-400 text-[11px]">
+                {t('driver.stats.rating')}
+              </Text>
+              <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
+                {(user?.rating ?? driverStats.rating).toFixed(1)} ★
+              </Text>
+            </View>
+          </View>
         </View>
-      </BottomSheet>
+      </View>
     </View>
   );
 }

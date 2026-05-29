@@ -85,7 +85,8 @@
     "title": "Where to?",
     "placeholder": "Search destination",
     "suggestions": "Suggestions",
-    "recentAndSaved": "Recent and saved"
+    "recentAndSaved": "Recent and saved",
+    "emptyHint": "Your past destinations will show up here"
   },
   "vehicleSelect": {
     "title": "Choose your ride",
@@ -164,7 +165,13 @@
     "bonus": "Bonus",
     "paymentMethods": "Payment methods",
     "addNewCard": "Add new card",
-    "default": "Default"
+    "default": "Default",
+    "noCards": "You don't have saved cards yet",
+    "cardActions": "Card •••• {{last4}}",
+    "makeDefault": "Make default",
+    "removeCard": "Remove card",
+    "removeConfirm": "Remove card •••• {{last4}}?",
+    "actionFailed": "We couldn't complete the action"
   },
   "addCard": {
     "title": "Add payment card",
@@ -173,18 +180,22 @@
     "cardNumber": "Card number",
     "cardNumberPlaceholder": "1234 5678 9012 3456",
     "expiry": "Expiry",
-    "expiryPlaceholder": "06/27",
+    "expiryPlaceholder": "MM/YY",
     "cvv": "CVV",
     "cvvPlaceholder": "123",
     "scanCard": "Scan card",
     "cardholder": "CARDHOLDER",
     "expires": "EXPIRES",
     "placeholderCardName": "Your name",
+    "success": "Card saved",
+    "successMessage": "Card •••• {{last4}} was added",
     "errors": {
       "holderRequired": "Cardholder name required",
       "numberInvalid": "Card must be 16 digits",
       "expiryInvalid": "Use MM/YY format",
-      "cvvInvalid": "CVV is invalid"
+      "expiryMonth": "Invalid month (01-12)",
+      "cvvInvalid": "CVV is invalid",
+      "saveFailed": "We couldn't save the card"
     }
   },
   "history": {
@@ -344,7 +355,8 @@
       "vehicleSeats": "Seats",
       "vehicleCategory": "Category",
       "totalRides": "Total rides",
-      "yearsActive": "Years active"
+      "yearsActive": "Years active",
+      "noVehicle": "You haven't registered a vehicle yet"
     }
   }
 }
