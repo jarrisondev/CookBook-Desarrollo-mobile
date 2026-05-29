@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -15,9 +15,11 @@ import {
 import type { LucideIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Button, IconButton, MapPlaceholder } from '../../components';
+import { Button, IconButton, MapView } from '../../components';
+import type { MapMarker } from '../../components';
 import { shadows } from '../../theme';
 import { useIconColor } from '../../hooks/useIconColor';
+import { useLocation } from '../../hooks/useLocation';
 import { useUserCards } from '../../hooks/useUserCards';
 import { rideCategories } from '../../constants/mockData';
 import { formatCurrency } from '../../utils/format';
@@ -30,7 +32,14 @@ import {
 } from '../../store/slices/rideSlice';
 import { createRide } from '../../services/firebase/rides';
 import { addRecentPlace } from '../../services/firebase/places';
+import {
+  getRoute,
+  metersToKm,
+  secondsToMinutes,
+} from '../../services/google';
+import type { Route } from '../../services/google';
 import type { PaymentMethod } from '../../models';
+import type { Coordinates } from '../../hooks/useLocation';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'VehicleSelect'>;
@@ -46,6 +55,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
   const dispatch = useAppDispatch();
   const iconColor = useIconColor();
   const [loading, setLoading] = useState(false);
+  const [routeInfo, setRouteInfo] = useState<Route | null>(null);
   const user = useAppSelector((s) => s.auth.user);
   const destinationState = useAppSelector((s) => s.ride.destination);
   const selectedId = useAppSelector((s) => s.ride.selectedCategory);
@@ -53,6 +63,53 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
   const selected = rideCategories.find((c) => c.id === selectedId) ?? rideCategories[0];
   const destinationAddress = route.params?.destination ?? destinationState?.address ?? '—';
   const { defaultCard } = useUserCards();
+  const { coords: userCoords } = useLocation();
+
+  const pickupCoord: Coordinates = userCoords;
+  const destinationCoord: Coordinates | null =
+    destinationState?.lat !== undefined && destinationState?.lng !== undefined
+      ? { latitude: destinationState.lat, longitude: destinationState.lng }
+      : null;
+
+  // Load real route + distance + ETA between pickup and destination
+  useEffect(() => {
+    if (!destinationCoord) return;
+    let cancelled = false;
+    getRoute(pickupCoord, destinationCoord)
+      .then((r) => {
+        if (!cancelled) setRouteInfo(r);
+      })
+      .catch((err) => {
+        if (!cancelled) console.warn('[directions] failed:', err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    pickupCoord.latitude,
+    pickupCoord.longitude,
+    destinationCoord?.latitude,
+    destinationCoord?.longitude,
+  ]);
+
+  const distanceKm = routeInfo ? metersToKm(routeInfo.distanceMeters) : undefined;
+  const etaMin = routeInfo ? secondsToMinutes(routeInfo.durationSeconds) : undefined;
+
+  const markers: MapMarker[] = [];
+  markers.push({
+    id: 'pickup',
+    coordinate: pickupCoord,
+    title: t('vehicleSelect.goingTo'),
+    pinColor: '#22C55E',
+  });
+  if (destinationCoord) {
+    markers.push({
+      id: 'dropoff',
+      coordinate: destinationCoord,
+      title: destinationAddress,
+      pinColor: '#0F1115',
+    });
+  }
 
   const methods: { id: PaymentMethod; label: string; icon: typeof CreditCard }[] = [
     { id: 'cash', label: t('payment.cash'), icon: DollarSign },
@@ -84,12 +141,17 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
       dispatch(setFareEstimate(selected.price));
       const rideId = await createRide({
         rider: user,
-        pickup: { label: 'Mi ubicación', address: 'Ubicación actual' },
+        pickup: {
+          label: 'Mi ubicación',
+          address: 'Ubicación actual',
+          lat: pickupCoord.latitude,
+          lng: pickupCoord.longitude,
+        },
         dropoff: destinationState,
         category: selected.id,
         fareEstimate: selected.price,
-        distanceKm: 3.2,
-        etaMin: selected.etaMin,
+        distanceKm: distanceKm ?? 0,
+        etaMin: etaMin ?? selected.etaMin,
         paymentMethod,
         cardLast4: paymentMethod === 'card' ? defaultCard?.last4 : undefined,
       });
@@ -108,7 +170,12 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showRoute showPulse={false} />
+      <MapView
+        initialCoordinates={pickupCoord}
+        markers={markers}
+        routePolyline={routeInfo?.polyline}
+        showMyLocationButton={false}
+      />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="flex-row items-center mt-2">
@@ -129,6 +196,11 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
             >
               {destinationAddress}
             </Text>
+            {distanceKm !== undefined && etaMin !== undefined ? (
+              <Text className="text-primary-600 text-[11px] font-semibold mt-0.5">
+                {distanceKm} km · {etaMin} min
+              </Text>
+            ) : null}
           </View>
         </View>
       </SafeAreaView>
@@ -186,7 +258,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
                     {formatCurrency(cat.price)}
                   </Text>
                   <Text className="text-muted dark:text-ink-400 text-xs">
-                    {t('vehicleSelect.minutes', { count: cat.etaMin })}
+                    {t('vehicleSelect.minutes', { count: etaMin ?? cat.etaMin })}
                   </Text>
                 </Pressable>
               );
