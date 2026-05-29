@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Camera } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,15 +8,28 @@ import {
   Card,
   TextField,
 } from '../../../components';
-import { mockDriverProfile } from '../../../constants/driverMockData';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { profileUpdated } from '../../../store/slices/authSlice';
+import { updateUserProfile } from '../../../services/firebase/users';
 import { formatCurrency } from '../../../utils/format';
 
 export function DriverPersonalTab() {
   const { t } = useTranslation();
-  const [fullName, setFullName] = useState(mockDriverProfile.fullName);
-  const [phone, setPhone] = useState(mockDriverProfile.phone);
-  const [email, setEmail] = useState(mockDriverProfile.email);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((s) => s.auth.user);
+
+  const [fullName, setFullName] = useState(user?.fullName ?? '');
+  const [phone, setPhone] = useState(user?.phone ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<{ fullName?: string; phone?: string; email?: string }>({});
+
+  useEffect(() => {
+    if (!user) return;
+    setFullName(user.fullName);
+    setPhone(user.phone);
+    setEmail(user.email);
+  }, [user]);
 
   const validate = () => {
     const next: typeof errors = {};
@@ -28,6 +41,27 @@ export function DriverPersonalTab() {
     else if (!/^\S+@\S+\.\S+$/.test(email)) next.email = t('auth.errors.invalidEmail');
     setErrors(next);
     return Object.keys(next).length === 0;
+  };
+
+  const handleSave = async () => {
+    if (!validate() || !user) return;
+    setSaving(true);
+    try {
+      const patch = {
+        fullName: fullName.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+      };
+      await updateUserProfile(user.uid, patch);
+      dispatch(profileUpdated(patch));
+    } catch (err) {
+      Alert.alert(
+        t('driver.profile.personalData'),
+        err instanceof Error ? err.message : 'Error',
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -47,7 +81,7 @@ export function DriverPersonalTab() {
           {fullName}
         </Text>
         <Text className="text-muted dark:text-ink-400 text-sm">
-          {mockDriverProfile.level}
+          {user?.level ?? 'Pro Driver'}
         </Text>
       </View>
 
@@ -55,26 +89,18 @@ export function DriverPersonalTab() {
         <View className="flex-row justify-between">
           <View className="items-center flex-1">
             <Text className="text-muted dark:text-ink-400 text-xs">
-              {t('driver.profile.totalRides')}
-            </Text>
-            <Text className="text-ink-900 dark:text-white font-bold mt-1">
-              {mockDriverProfile.totalRides}
-            </Text>
-          </View>
-          <View className="items-center flex-1">
-            <Text className="text-muted dark:text-ink-400 text-xs">
               {t('driver.stats.rating')}
             </Text>
             <Text className="text-ink-900 dark:text-white font-bold mt-1">
-              {mockDriverProfile.rating.toFixed(1)} ★
+              {(user?.rating ?? 5).toFixed(1)} ★
             </Text>
           </View>
           <View className="items-center flex-1">
             <Text className="text-muted dark:text-ink-400 text-xs">
-              {t('driver.profile.yearsActive')}
+              {t('driver.home.balance')}
             </Text>
             <Text className="text-ink-900 dark:text-white font-bold mt-1">
-              {mockDriverProfile.yearsActive}
+              {formatCurrency(user?.balance ?? 0)}
             </Text>
           </View>
         </View>
@@ -105,19 +131,8 @@ export function DriverPersonalTab() {
         />
       </View>
 
-      <View className="mt-6">
-        <Card>
-          <Text className="text-muted dark:text-ink-400 text-xs">
-            {t('driver.home.balance')}
-          </Text>
-          <Text className="text-ink-900 dark:text-white text-2xl font-bold mt-1">
-            {formatCurrency(mockDriverProfile.balance)}
-          </Text>
-        </Card>
-      </View>
-
       <View className="mt-8">
-        <Button label={t('common.saveChanges')} onPress={validate} />
+        <Button label={t('common.saveChanges')} onPress={handleSave} loading={saving} />
       </View>
     </ScrollView>
   );

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Camera } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -8,15 +8,30 @@ import {
   Select,
   TextField,
 } from '../../../components';
-import { mockUser } from '../../../constants/mockData';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { profileUpdated } from '../../../store/slices/authSlice';
+import { updateUserProfile } from '../../../services/firebase/users';
+import type { Gender } from '../../../models';
 
 export function PersonalDataTab() {
   const { t } = useTranslation();
-  const [fullName, setFullName] = useState(mockUser.name);
-  const [phone, setPhone] = useState(mockUser.phone);
-  const [email, setEmail] = useState(mockUser.email);
-  const [gender, setGender] = useState<'male' | 'female' | 'other'>(mockUser.gender);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((s) => s.auth.user);
+
+  const [fullName, setFullName] = useState(user?.fullName ?? '');
+  const [phone, setPhone] = useState(user?.phone ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [gender, setGender] = useState<Gender>(user?.gender ?? 'male');
+  const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<{ fullName?: string; phone?: string; email?: string }>({});
+
+  useEffect(() => {
+    if (!user) return;
+    setFullName(user.fullName);
+    setPhone(user.phone);
+    setEmail(user.email);
+    setGender(user.gender);
+  }, [user]);
 
   const validate = () => {
     const next: typeof errors = {};
@@ -28,6 +43,28 @@ export function PersonalDataTab() {
     else if (!/^\S+@\S+\.\S+$/.test(email)) next.email = t('auth.errors.invalidEmail');
     setErrors(next);
     return Object.keys(next).length === 0;
+  };
+
+  const handleSave = async () => {
+    if (!validate() || !user) return;
+    setSaving(true);
+    try {
+      const patch = {
+        fullName: fullName.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        gender,
+      };
+      await updateUserProfile(user.uid, patch);
+      dispatch(profileUpdated(patch));
+    } catch (err) {
+      Alert.alert(
+        t('profile.personalData'),
+        err instanceof Error ? err.message : 'Error',
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -43,8 +80,12 @@ export function PersonalDataTab() {
             <Camera size={14} color="#fff" />
           </Pressable>
         </View>
-        <Text className="text-ink-900 dark:text-white font-bold text-lg mt-3">{fullName}</Text>
-        <Text className="text-muted dark:text-ink-400 text-sm">{mockUser.level}</Text>
+        <Text className="text-ink-900 dark:text-white font-bold text-lg mt-3">
+          {fullName}
+        </Text>
+        <Text className="text-muted dark:text-ink-400 text-sm">
+          {user?.level ?? 'Basic Level'}
+        </Text>
       </View>
 
       <View className="gap-4">
@@ -83,7 +124,7 @@ export function PersonalDataTab() {
       </View>
 
       <View className="mt-8">
-        <Button label={t('common.saveChanges')} onPress={validate} />
+        <Button label={t('common.saveChanges')} onPress={handleSave} loading={saving} />
       </View>
     </ScrollView>
   );
