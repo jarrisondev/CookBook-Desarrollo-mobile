@@ -40,7 +40,13 @@ export function IncomingRideScreen({ navigation }: Props) {
     if (!user || !rideId || !request) return;
     try {
       await acceptRide(rideId, user);
-      navigation.replace('DriverPickup');
+      // Close the modal and let useDriverActiveRideBootstrap push
+      // DriverPickup as soon as Firestore reflects the new 'accepted'
+      // status. Doing `navigation.replace` directly from a
+      // transparentModal into a regular push screen leaves the stack
+      // half-rendered (blank screen with spinner) until the app is
+      // restarted.
+      if (navigation.canGoBack()) navigation.goBack();
     } catch (err) {
       Alert.alert('Viaje', err instanceof Error ? err.message : 'Error');
     }
