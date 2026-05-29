@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Divider,
-  MapPlaceholder,
+  MapView,
 } from '../../../components';
+import { useLocation } from '../../../hooks/useLocation';
 import { shadows } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import {
@@ -33,6 +34,7 @@ export function DriverHomeScreen({ navigation }: Props) {
   const online = useAppSelector((s) => s.driver.online);
   const activeRideId = useAppSelector((s) => s.driver.activeRideId);
   const [openRequests, setOpenRequests] = useState<Ride[]>([]);
+  const { coords } = useLocation();
 
   useEffect(() => {
     if (!online) return;
@@ -61,7 +63,7 @@ export function DriverHomeScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showPulse={online} />
+      <MapView initialCoordinates={coords} myLocation={coords} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="items-center mt-2">

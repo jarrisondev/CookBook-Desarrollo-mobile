@@ -9,8 +9,9 @@ import {
   Search,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { MapPlaceholder } from '../../../components';
+import { MapView } from '../../../components';
 import { shadows } from '../../../theme';
+import { useLocation } from '../../../hooks/useLocation';
 import { useSavedPlaces } from '../../../hooks/useSavedPlaces';
 import { useAppDispatch } from '../../../store';
 import { setDestination } from '../../../store/slices/rideSlice';
@@ -30,6 +31,7 @@ export function HomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { places } = useSavedPlaces();
+  const { coords } = useLocation();
 
   const handlePickPlace = (label: string, address: string) => {
     dispatch(setDestination({ label, address }));
@@ -38,7 +40,7 @@ export function HomeScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showPulse />
+      <MapView initialCoordinates={coords} myLocation={coords} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="items-center mt-2">
