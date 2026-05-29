@@ -1,11 +1,12 @@
+export type RideCategoryId = 'economic' | 'xl' | 'premium';
+
 export type RideCategory = {
-  id: 'economic' | 'xl' | 'premium';
+  id: RideCategoryId;
   label: string;
   description: string;
   capacity: number;
   etaMin: number;
   price: number;
-  emoji: string;
 };
 
 export const rideCategories: RideCategory[] = [
@@ -16,7 +17,6 @@ export const rideCategories: RideCategory[] = [
     capacity: 4,
     etaMin: 4,
     price: 5.5,
-    emoji: '🚗',
   },
   {
     id: 'xl',
@@ -25,7 +25,6 @@ export const rideCategories: RideCategory[] = [
     capacity: 6,
     etaMin: 6,
     price: 8.9,
-    emoji: '🚙',
   },
   {
     id: 'premium',
@@ -34,6 +33,5 @@ export const rideCategories: RideCategory[] = [
     capacity: 4,
     etaMin: 5,
     price: 12.4,
-    emoji: '🚘',
   },
 ];

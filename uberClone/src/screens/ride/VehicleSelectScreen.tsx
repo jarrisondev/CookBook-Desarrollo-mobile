@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  Award,
+  Bus,
+  Car,
   ChevronLeft,
   CreditCard,
   DollarSign,
@@ -9,6 +12,7 @@ import {
   Users,
   Wallet as WalletIcon,
 } from 'lucide-react-native';
+import type { LucideIcon } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, IconButton, MapPlaceholder } from '../../components';
@@ -30,6 +34,12 @@ import type { PaymentMethod } from '../../models';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'VehicleSelect'>;
+
+const categoryIcons: Record<'economic' | 'xl' | 'premium', LucideIcon> = {
+  economic: Car,
+  xl: Bus,
+  premium: Award,
+};
 
 export function VehicleSelectScreen({ navigation, route }: Props) {
   const { t } = useTranslation();
@@ -143,6 +153,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
             {rideCategories.map((cat) => {
               const isSelected = cat.id === selectedId;
               const label = t(`ride.categories.${cat.id}`);
+              const CategoryIcon = categoryIcons[cat.id];
               return (
                 <Pressable
                   key={cat.id}
@@ -153,7 +164,17 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
                       : 'border-border dark:border-dark-border bg-surface dark:bg-dark-surface'
                   }`}
                 >
-                  <Text className="text-4xl">{cat.emoji}</Text>
+                  <View
+                    className={`w-12 h-12 rounded-2xl items-center justify-center ${
+                      isSelected ? 'bg-primary-500' : 'bg-ink-100 dark:bg-ink-700'
+                    }`}
+                  >
+                    <CategoryIcon
+                      size={26}
+                      color={isSelected ? '#fff' : iconColor.primary}
+                      strokeWidth={2.2}
+                    />
+                  </View>
                   <Text className="text-ink-900 dark:text-white font-bold mt-2">{label}</Text>
                   <View className="flex-row items-center mt-1">
                     <Users size={12} color="#6B7280" />
