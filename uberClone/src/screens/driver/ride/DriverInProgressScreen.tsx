@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MapPin } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Button, MapPlaceholder } from '../../../components';
+import { Button, RideMap } from '../../../components';
 import { shadows } from '../../../theme';
 import { useAppSelector } from '../../../store';
 import {
@@ -75,7 +75,7 @@ export function DriverInProgressScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showRoute showPulse={false} />
+      <RideMap ride={ride} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 rounded-2xl px-4 py-3 mt-2" style={shadows.card}>

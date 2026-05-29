@@ -1,14 +1,16 @@
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Button, MapPlaceholder } from '../../components';
+import { Button, RideMap } from '../../components';
 import { shadows } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { resetRide } from '../../store/slices/rideSlice';
 import { cancelRide } from '../../services/firebase/rides';
 import { useRideSubscription } from '../../hooks/useRideSubscription';
 import { formatCurrency } from '../../utils/format';
+import type { Ride } from '../../models';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'SearchingDriver'>;
@@ -19,8 +21,9 @@ export function SearchingDriverScreen({ navigation }: Props) {
   const destination = useAppSelector((s) => s.ride.destination);
   const fare = useAppSelector((s) => s.ride.fareEstimate);
   const rideId = useAppSelector((s) => s.ride.currentRideId);
+  const [ride, setRide] = useState<Ride | null>(null);
 
-  useRideSubscription();
+  useRideSubscription(setRide);
 
   const handleCancel = async () => {
     if (rideId) {
@@ -34,7 +37,7 @@ export function SearchingDriverScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showPulse />
+      <RideMap ride={ride} showMyLocationButton={false} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         {destination ? (

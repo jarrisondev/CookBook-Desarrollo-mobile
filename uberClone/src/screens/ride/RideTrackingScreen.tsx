@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageCircle, Phone, Star, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Avatar, Button, IconButton, MapPlaceholder } from '../../components';
+import { Avatar, Button, IconButton, RideMap } from '../../components';
 import { shadows } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { resetRide } from '../../store/slices/rideSlice';
@@ -35,7 +35,7 @@ export function RideTrackingScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showRoute showPulse={false} />
+      <RideMap ride={ride} showMyLocationButton={false} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 px-4 py-1.5 rounded-full self-center mt-2" style={shadows.card}>

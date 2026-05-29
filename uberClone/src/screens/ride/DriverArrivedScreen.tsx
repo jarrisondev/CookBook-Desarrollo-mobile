@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageCircle, Phone, Star } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Avatar, IconButton, MapPlaceholder } from '../../components';
+import { Avatar, IconButton, RideMap } from '../../components';
 import { shadows } from '../../theme';
 import { useRideSubscription } from '../../hooks/useRideSubscription';
 import type { Ride } from '../../models';
@@ -20,7 +20,7 @@ export function DriverArrivedScreen(_: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showPulse />
+      <RideMap ride={ride} showMyLocationButton={false} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-primary-500 px-4 py-2 rounded-full self-center mt-2" style={shadows.card}>

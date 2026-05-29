@@ -8,7 +8,7 @@ import {
   Avatar,
   Button,
   IconButton,
-  MapPlaceholder,
+  RideMap,
 } from '../../../components';
 import { shadows } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store';
@@ -74,7 +74,7 @@ export function DriverPickupScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <MapPlaceholder showRoute showPulse={false} />
+      <RideMap ride={ride} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="flex-row items-center justify-between mt-2">
