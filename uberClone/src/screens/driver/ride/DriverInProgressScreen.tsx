@@ -1,4 +1,5 @@
-import { Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MapPin } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -6,13 +7,69 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, MapPlaceholder } from '../../../components';
 import { shadows } from '../../../theme';
 import { useAppSelector } from '../../../store';
+import {
+  completeRide,
+  subscribeToRide,
+} from '../../../services/firebase/rides';
+import { formatCurrency } from '../../../utils/format';
+import type { Ride } from '../../../models';
 import type { DriverStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<DriverStackParamList, 'DriverInProgress'>;
 
 export function DriverInProgressScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const ride = useAppSelector((s) => s.driver.activeRide);
+  const rideId = useAppSelector((s) => s.driver.activeRideId);
+  const [ride, setRide] = useState<Ride | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!rideId) {
+      if (navigation.canGoBack()) navigation.goBack();
+      return;
+    }
+    const unsub = subscribeToRide(rideId, (r) => {
+      if (!r) return;
+      setRide(r);
+    });
+    return unsub;
+  }, [rideId, navigation]);
+
+  const completeAndNavigate = async () => {
+    if (!rideId || !ride) return;
+    setLoading(true);
+    try {
+      await completeRide(rideId, { finalFare: ride.fareEstimate });
+      navigation.replace('DriverCompleted');
+    } catch (err) {
+      Alert.alert('Viaje', err instanceof Error ? err.message : 'Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEnd = () => {
+    if (!ride) return;
+    if (ride.paymentMethod === 'cash') {
+      Alert.alert(
+        t('driver.inProgress.confirmCashTitle'),
+        t('driver.inProgress.confirmCashMessage', {
+          amount: formatCurrency(ride.fareEstimate),
+        }),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          {
+            text: t('driver.inProgress.confirmCash'),
+            onPress: () => {
+              void completeAndNavigate();
+            },
+          },
+        ],
+      );
+    } else {
+      void completeAndNavigate();
+    }
+  };
 
   if (!ride) return null;
 
@@ -35,7 +92,7 @@ export function DriverInProgressScreen({ navigation }: Props) {
           style={shadows.card}
         >
           <Text className="text-primary-700 font-semibold text-sm">
-            {t('driver.inProgress.etaToDropoff', { count: ride.etaMin })}
+            {t('driver.inProgress.etaToDropoff', { count: ride.etaMin ?? 4 })}
           </Text>
         </View>
       </SafeAreaView>
@@ -51,12 +108,18 @@ export function DriverInProgressScreen({ navigation }: Props) {
             {t('driver.inProgress.tripInProgress')}
           </Text>
           <Text className="text-muted dark:text-ink-400 text-sm mb-6">
-            {ride.riderName} · {ride.distanceKm} km
+            {ride.riderName} · {ride.distanceKm ?? 0} km ·{' '}
+            {ride.paymentMethod === 'cash'
+              ? t('payment.cash')
+              : ride.paymentMethod === 'card'
+                ? t('payment.card')
+                : t('payment.wallet')}
           </Text>
 
           <Button
             label={t('driver.inProgress.endTrip')}
-            onPress={() => navigation.replace('DriverCompleted')}
+            onPress={handleEnd}
+            loading={loading}
           />
         </View>
       </View>

@@ -1,28 +1,27 @@
-import { useEffect } from 'react';
-import { Pressable, Switch, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   BottomSheet,
   Card,
   Divider,
+  MapPlaceholder,
 } from '../../../components';
 import { shadows } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import {
-  setIncomingRequest,
+  setActiveRideId,
   setOnline,
 } from '../../../store/slices/driverSlice';
 import {
-  driverStats,
-  mockDriverProfile,
-  mockIncomingRequest,
-  weeklyEarnings,
-} from '../../../constants/driverMockData';
+  subscribeToActiveDriverRide,
+  subscribeToOpenRequests,
+} from '../../../services/firebase/rides';
+import { driverStats, weeklyEarnings } from '../../../constants/driverMockData';
 import { formatCurrency } from '../../../utils/format';
-import { MapPlaceholder } from '../../../components/MapPlaceholder';
+import type { Ride } from '../../../models';
 import type { DriverTabScreenProps } from '../../../navigation/types';
 
 type Props = DriverTabScreenProps<'DriverHome'>;
@@ -35,18 +34,35 @@ const todaysEarnings = weeklyEarnings[weeklyEarnings.length - 1];
 export function DriverHomeScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const user = useAppSelector((s) => s.auth.user);
   const online = useAppSelector((s) => s.driver.online);
-  const currentRequest = useAppSelector((s) => s.driver.currentRequest);
+  const activeRideId = useAppSelector((s) => s.driver.activeRideId);
+  const [openRequests, setOpenRequests] = useState<Ride[]>([]);
 
   useEffect(() => {
-    if (currentRequest) {
+    if (!online) return;
+    const unsub = subscribeToOpenRequests(setOpenRequests);
+    return unsub;
+  }, [online]);
+
+  useEffect(() => {
+    if (!online || activeRideId) return;
+    const next = openRequests[0];
+    if (next) {
+      dispatch(setActiveRideId(next.id));
       navigation.navigate('IncomingRide');
     }
-  }, [currentRequest, navigation]);
+  }, [online, openRequests, activeRideId, dispatch, navigation]);
 
-  const handleSimulateRequest = () => {
-    dispatch(setIncomingRequest(mockIncomingRequest));
-  };
+  useEffect(() => {
+    if (!user || user.role !== 'driver') return;
+    const unsub = subscribeToActiveDriverRide(user.uid, (ride) => {
+      if (ride && activeRideId !== ride.id) {
+        dispatch(setActiveRideId(ride.id));
+      }
+    });
+    return unsub;
+  }, [user, activeRideId, dispatch]);
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
@@ -86,27 +102,22 @@ export function DriverHomeScreen({ navigation }: Props) {
         ) : null}
       </SafeAreaView>
 
-      <BottomSheet
-        collapsedHeight={COLLAPSED_HEIGHT}
-        expandedHeight={EXPANDED_HEIGHT}
-      >
+      <BottomSheet collapsedHeight={COLLAPSED_HEIGHT} expandedHeight={EXPANDED_HEIGHT}>
         <View className="flex-row items-center justify-between mb-4">
           <View>
             <Text className="text-muted dark:text-ink-400 text-xs">
               {t('driver.home.balance')}
             </Text>
             <Text className="text-ink-900 dark:text-white text-2xl font-bold mt-0.5">
-              {formatCurrency(mockDriverProfile.balance)}
+              {formatCurrency(user?.balance ?? 0)}
             </Text>
           </View>
           <View className="items-end">
-            <Avatar name={mockDriverProfile.fullName} size={44} />
+            <Avatar name={user?.fullName ?? '?'} size={44} />
             <Text className="text-ink-900 dark:text-white font-semibold text-sm mt-1">
-              {mockDriverProfile.fullName.split(' ')[0]}
+              {user?.fullName.split(' ')[0]}
             </Text>
-            <Text className="text-muted dark:text-ink-400 text-[10px]">
-              {mockDriverProfile.level}
-            </Text>
+            <Text className="text-muted dark:text-ink-400 text-[10px]">{user?.level}</Text>
           </View>
         </View>
 
@@ -134,7 +145,7 @@ export function DriverHomeScreen({ navigation }: Props) {
               {t('driver.stats.rating')}
             </Text>
             <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
-              {driverStats.rating.toFixed(1)} ★
+              {(user?.rating ?? driverStats.rating).toFixed(1)} ★
             </Text>
           </View>
         </View>
@@ -152,7 +163,7 @@ export function DriverHomeScreen({ navigation }: Props) {
               </View>
               <View className="items-center flex-1">
                 <Text className="text-white text-lg font-bold">
-                  {driverStats.rating.toFixed(1)}
+                  {(user?.rating ?? driverStats.rating).toFixed(1)}
                 </Text>
                 <Text className="text-white/70 text-xs">
                   {t('driver.stats.rating')}
@@ -169,18 +180,6 @@ export function DriverHomeScreen({ navigation }: Props) {
             </View>
           </Card>
         </View>
-
-        {online ? (
-          <Pressable
-            onPress={handleSimulateRequest}
-            className="mt-4 bg-primary-50 rounded-2xl px-4 py-3 flex-row items-center justify-center"
-          >
-            <ChevronUp size={18} color="#16A34A" />
-            <Text className="text-primary-700 font-semibold ml-2">
-              {t('driver.home.simulate')}
-            </Text>
-          </Pressable>
-        ) : null}
       </BottomSheet>
     </View>
   );

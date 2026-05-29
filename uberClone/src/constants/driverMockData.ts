@@ -1,5 +1,3 @@
-import type { RideRequest } from '../store/slices/driverSlice';
-
 export const mockDriverProfile = {
   fullName: 'Mahmud Hasan',
   email: 'mahmud.hasan@example.com',
@@ -105,14 +103,3 @@ export const driverTripHistory: DriverTrip[] = [
   },
 ];
 
-export const mockIncomingRequest: RideRequest = {
-  id: 'req-1',
-  riderName: 'John Smith Doe',
-  riderRating: 4.8,
-  pickup: { label: 'St Paul Cathedral', address: 'St Paul’s Churchyard, London' },
-  dropoff: { label: 'Tower Bridge', address: 'Tower Bridge Rd, London' },
-  fare: 7.4,
-  distanceKm: 3.2,
-  etaMin: 4,
-  bonusPercent: 15,
-};

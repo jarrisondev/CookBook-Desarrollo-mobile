@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { MapPin, Star, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Avatar, Button, Card, MapPlaceholder } from '../../../components';
 import { shadows } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store';
-import {
-  acceptRequest,
-  rejectRequest,
-} from '../../../store/slices/driverSlice';
+import { setActiveRideId } from '../../../store/slices/driverSlice';
+import { acceptRide, subscribeToRide } from '../../../services/firebase/rides';
 import { formatCurrency } from '../../../utils/format';
+import type { Ride } from '../../../models';
 import type { DriverStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<DriverStackParamList, 'IncomingRide'>;
@@ -20,19 +19,33 @@ const COUNTDOWN_SECONDS = 15;
 export function IncomingRideScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const request = useAppSelector((s) => s.driver.currentRequest);
+  const user = useAppSelector((s) => s.auth.user);
+  const rideId = useAppSelector((s) => s.driver.activeRideId);
+  const [request, setRequest] = useState<Ride | null>(null);
   const [seconds, setSeconds] = useState(COUNTDOWN_SECONDS);
 
   useEffect(() => {
-    if (!request) {
+    if (!rideId) {
       navigation.goBack();
       return;
     }
+    const unsub = subscribeToRide(rideId, (ride) => {
+      if (!ride || ride.status !== 'searching') {
+        navigation.goBack();
+        dispatch(setActiveRideId(null));
+        return;
+      }
+      setRequest(ride);
+    });
+    return unsub;
+  }, [rideId, navigation, dispatch]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setSeconds((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          dispatch(rejectRequest());
+          dispatch(setActiveRideId(null));
           navigation.goBack();
           return 0;
         }
@@ -40,15 +53,20 @@ export function IncomingRideScreen({ navigation }: Props) {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [request, dispatch, navigation]);
+  }, [dispatch, navigation]);
 
-  const handleAccept = () => {
-    dispatch(acceptRequest());
-    navigation.replace('DriverPickup');
+  const handleAccept = async () => {
+    if (!user || !rideId || !request) return;
+    try {
+      await acceptRide(rideId, user);
+      navigation.replace('DriverPickup');
+    } catch (err) {
+      Alert.alert('Viaje', err instanceof Error ? err.message : 'Error');
+    }
   };
 
   const handleReject = () => {
-    dispatch(rejectRequest());
+    dispatch(setActiveRideId(null));
     navigation.goBack();
   };
 
@@ -79,16 +97,18 @@ export function IncomingRideScreen({ navigation }: Props) {
               <Text className="text-ink-900 dark:text-white font-bold text-base">
                 {request.riderName}
               </Text>
-              <View className="flex-row items-center mt-0.5">
-                <Star size={14} color="#F59E0B" fill="#F59E0B" />
-                <Text className="text-ink-700 dark:text-ink-200 text-sm ml-1">
-                  {request.riderRating.toFixed(1)}
-                </Text>
-              </View>
+              {request.riderRating !== undefined ? (
+                <View className="flex-row items-center mt-0.5">
+                  <Star size={14} color="#F59E0B" fill="#F59E0B" />
+                  <Text className="text-ink-700 dark:text-ink-200 text-sm ml-1">
+                    {request.riderRating.toFixed(1)}
+                  </Text>
+                </View>
+              ) : null}
             </View>
             <View className="items-end">
               <Text className="text-primary-600 text-2xl font-bold">
-                {formatCurrency(request.fare)}
+                {formatCurrency(request.fareEstimate)}
               </Text>
               {request.bonusPercent ? (
                 <Text className="text-primary-600 text-xs font-semibold">
@@ -111,9 +131,11 @@ export function IncomingRideScreen({ navigation }: Props) {
                   {request.pickup.label}
                 </Text>
               </View>
-              <Text className="text-muted dark:text-ink-400 text-xs">
-                {t('driver.incoming.minutes', { count: request.etaMin })}
-              </Text>
+              {request.etaMin !== undefined ? (
+                <Text className="text-muted dark:text-ink-400 text-xs">
+                  {t('driver.incoming.minutes', { count: request.etaMin })}
+                </Text>
+              ) : null}
             </View>
             <View className="flex-row items-center">
               <View className="w-8 h-8 rounded-full bg-ink-900 items-center justify-center mr-3">
@@ -127,9 +149,11 @@ export function IncomingRideScreen({ navigation }: Props) {
                   {request.dropoff.label}
                 </Text>
               </View>
-              <Text className="text-muted dark:text-ink-400 text-xs">
-                {t('driver.incoming.km', { count: request.distanceKm })}
-              </Text>
+              {request.distanceKm !== undefined ? (
+                <Text className="text-muted dark:text-ink-400 text-xs">
+                  {t('driver.incoming.km', { count: request.distanceKm })}
+                </Text>
+              ) : null}
             </View>
           </View>
 

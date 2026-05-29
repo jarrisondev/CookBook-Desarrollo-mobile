@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { Star } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -9,30 +10,41 @@ import {
   ScreenContainer,
 } from '../../../components';
 import { useAppDispatch, useAppSelector } from '../../../store';
-import { finishRide } from '../../../store/slices/driverSlice';
+import { setActiveRideId } from '../../../store/slices/driverSlice';
+import { subscribeToRide } from '../../../services/firebase/rides';
 import { formatCurrency } from '../../../utils/format';
+import type { Ride } from '../../../models';
 import type { DriverStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<DriverStackParamList, 'DriverCompleted'>;
 
-const TIP = 1.5;
-
 export function DriverCompletedScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const ride = useAppSelector((s) => s.driver.activeRide);
+  const rideId = useAppSelector((s) => s.driver.activeRideId);
+  const [ride, setRide] = useState<Ride | null>(null);
+
+  useEffect(() => {
+    if (!rideId) {
+      navigation.reset({ index: 0, routes: [{ name: 'DriverTabs' }] });
+      return;
+    }
+    const unsub = subscribeToRide(rideId, (r) => {
+      if (r) setRide(r);
+    });
+    return unsub;
+  }, [rideId, navigation]);
 
   const handleNext = () => {
-    dispatch(finishRide());
-    navigation.popToTop();
+    dispatch(setActiveRideId(null));
+    navigation.reset({ index: 0, routes: [{ name: 'DriverTabs' }] });
   };
 
-  if (!ride) {
-    return null;
-  }
+  if (!ride) return null;
 
-  const baseFare = ride.fare;
-  const total = baseFare + TIP;
+  const baseFare = ride.finalFare ?? ride.fareEstimate;
+  const tip = ride.tip ?? 0;
+  const total = baseFare + tip;
 
   return (
     <ScreenContainer scroll>
@@ -44,7 +56,7 @@ export function DriverCompletedScreen({ navigation }: Props) {
           {t('driver.completed.tripCompleted')}
         </Text>
         <Text className="text-muted dark:text-ink-400 text-sm mt-1">
-          {ride.riderName} · {ride.distanceKm} km
+          {ride.riderName} · {ride.distanceKm ?? 0} km
         </Text>
       </View>
 
@@ -66,12 +78,12 @@ export function DriverCompletedScreen({ navigation }: Props) {
             {formatCurrency(baseFare)}
           </Text>
         </View>
-        <View className="flex-row justify-between py-1.5">
-          <Text className="text-muted dark:text-ink-400">{t('driver.completed.tip')}</Text>
-          <Text className="text-primary-600 font-semibold">
-            {formatCurrency(TIP)}
-          </Text>
-        </View>
+        {tip > 0 ? (
+          <View className="flex-row justify-between py-1.5">
+            <Text className="text-muted dark:text-ink-400">{t('driver.completed.tip')}</Text>
+            <Text className="text-primary-600 font-semibold">{formatCurrency(tip)}</Text>
+          </View>
+        ) : null}
         <Divider className="my-3" />
         <View className="flex-row justify-between">
           <Text className="text-ink-900 dark:text-white font-bold">

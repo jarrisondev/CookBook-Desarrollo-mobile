@@ -27,6 +27,7 @@ export type DriverStackParamList = {
   DriverTabs: undefined;
   IncomingRide: undefined;
   DriverPickup: undefined;
+  DriverWaiting: undefined;
   DriverInProgress: undefined;
   DriverCompleted: undefined;
   DriverStats: undefined;
