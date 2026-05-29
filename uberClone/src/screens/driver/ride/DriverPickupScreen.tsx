@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, MessageCircle, Phone, Star, X } from 'lucide-react-native';
@@ -11,17 +11,18 @@ import {
   RideMap,
 } from '../../../components';
 import { shadows } from '../../../theme';
-import { useAppDispatch, useAppSelector } from '../../../store';
+import { useAppDispatch } from '../../../store';
 import { setActiveRideId } from '../../../store/slices/driverSlice';
 import {
   cancelRide,
   markDriverArrived,
-  subscribeToRide,
 } from '../../../services/firebase/rides';
+import { secondsToMinutes } from '../../../services/google';
+import type { Route } from '../../../services/google';
 import { useIconColor } from '../../../hooks/useIconColor';
-import { useLocation } from '../../../hooks/useLocation';
 import { useDriverRideLocationPublisher } from '../../../hooks/useDriverRideLocationPublisher';
-import type { Ride } from '../../../models';
+import { useDriverRideSubscription } from '../../../hooks/useDriverRideSubscription';
+import { coarseCoords } from '../../../utils/coords';
 import type { DriverStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<DriverStackParamList, 'DriverPickup'>;
@@ -30,27 +31,13 @@ export function DriverPickupScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const iconColor = useIconColor();
-  const rideId = useAppSelector((s) => s.driver.activeRideId);
-  const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(false);
-  const { coords: driverCoords } = useLocation();
-  useDriverRideLocationPublisher(rideId);
-
-  useEffect(() => {
-    if (!rideId) {
-      if (navigation.canGoBack()) navigation.goBack();
-      return;
-    }
-    const unsub = subscribeToRide(rideId, (r) => {
-      if (!r) return;
-      setRide(r);
-      if (r.status === 'cancelled') {
-        dispatch(setActiveRideId(null));
-        if (navigation.canGoBack()) navigation.popToTop();
-      }
-    });
-    return unsub;
-  }, [rideId, navigation, dispatch]);
+  const [liveRoute, setLiveRoute] = useState<Route | null>(null);
+  const { ride, rideId } = useDriverRideSubscription();
+  const liveCoords = useDriverRideLocationPublisher(rideId);
+  const routeOrigin = coarseCoords(liveCoords ?? undefined);
+  const handleRouteChange = useCallback((r: Route | null) => setLiveRoute(r), []);
+  const liveEtaMin = liveRoute ? secondsToMinutes(liveRoute.durationSeconds) : undefined;
 
   const handleCancel = async () => {
     if (!rideId) return;
@@ -78,7 +65,18 @@ export function DriverPickupScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <RideMap ride={ride} routeFrom={driverCoords} routeTo={ride.pickup.lat !== undefined && ride.pickup.lng !== undefined ? { latitude: ride.pickup.lat, longitude: ride.pickup.lng } : undefined} />
+      <RideMap
+        ride={ride}
+        routeFrom={routeOrigin}
+        routeTo={
+          ride.pickup.lat !== undefined && ride.pickup.lng !== undefined
+            ? { latitude: ride.pickup.lat, longitude: ride.pickup.lng }
+            : undefined
+        }
+        driverLocation={liveCoords ?? undefined}
+        onRouteChange={handleRouteChange}
+        tightFit
+      />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="flex-row items-center justify-between mt-2">
@@ -88,7 +86,7 @@ export function DriverPickupScreen({ navigation }: Props) {
           />
           <View className="bg-ink-900 px-4 py-1.5 rounded-full" style={shadows.card}>
             <Text className="text-white font-semibold text-sm">
-              {t('driver.pickup.goingToPickup')} · {ride.etaMin ?? 4} min
+              {t('driver.pickup.goingToPickup')} · {liveEtaMin ?? ride.etaMin ?? 4} min
             </Text>
           </View>
           <View style={{ width: 44 }} />

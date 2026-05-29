@@ -25,4 +25,6 @@ export function useDriverRideLocationPublisher(rideId: string | null) {
       console.warn('[driver-location] publish failed:', err);
     });
   }, [rideId, coords]);
+
+  return coords;
 }

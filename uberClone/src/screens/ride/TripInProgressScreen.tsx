@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MapPin } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RideMap } from '../../components';
+import { secondsToMinutes } from '../../services/google';
+import type { Route } from '../../services/google';
 import { shadows } from '../../theme';
 import { useAppSelector } from '../../store';
 import { useRideSubscription } from '../../hooks/useRideSubscription';
@@ -17,8 +19,18 @@ export function TripInProgressScreen(_: Props) {
   const { t } = useTranslation();
   const destinationState = useAppSelector((s) => s.ride.destination);
   const [ride, setRide] = useState<Ride | null>(null);
+  const [liveRoute, setLiveRoute] = useState<Route | null>(null);
 
   useRideSubscription(setRide);
+  const handleRouteChange = useCallback((r: Route | null) => setLiveRoute(r), []);
+  const liveEtaMin = liveRoute ? secondsToMinutes(liveRoute.durationSeconds) : undefined;
+
+  const driverCoords = ride?.driverLocation
+    ? {
+        latitude: ride.driverLocation.lat,
+        longitude: ride.driverLocation.lng,
+      }
+    : undefined;
 
   const destinationAddress =
     ride?.dropoff.address ?? destinationState?.address ?? '—';
@@ -28,22 +40,11 @@ export function TripInProgressScreen(_: Props) {
       <RideMap
         ride={ride}
         showMyLocationButton={false}
-        driverLocation={
-          ride?.driverLocation
-            ? {
-                latitude: ride.driverLocation.lat,
-                longitude: ride.driverLocation.lng,
-              }
-            : undefined
-        }
-        routeFrom={
-          ride?.driverLocation
-            ? {
-                latitude: ride.driverLocation.lat,
-                longitude: ride.driverLocation.lng,
-              }
-            : undefined
-        }
+        driverLocation={driverCoords}
+        routeFrom={driverCoords}
+        onRouteChange={handleRouteChange}
+        tightFit
+        hidePickupMarker
       />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
@@ -61,7 +62,7 @@ export function TripInProgressScreen(_: Props) {
           style={shadows.card}
         >
           <Text className="text-primary-700 font-semibold text-sm">
-            {t('inProgress.etaToDestination', { count: ride?.etaMin ?? 4 })}
+            {t('inProgress.etaToDestination', { count: liveEtaMin ?? ride?.etaMin ?? 4 })}
           </Text>
         </View>
       </SafeAreaView>

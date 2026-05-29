@@ -160,7 +160,6 @@ export function subscribeToRide(
 export function subscribeToOpenRequests(
   onChange: (rides: Ride[]) => void,
 ) {
-  console.log('[rides] subscribeToOpenRequests: opening listener');
   const q = query(
     ridesCollection,
     where('status', '==', 'searching'),
@@ -178,7 +177,6 @@ export function subscribeToOpenRequests(
           console.warn('[rides] subscribeToOpenRequests parse failed for', d.id, err);
         }
       });
-      console.log(`[rides] open requests snapshot: ${rides.length} ride(s)`);
       onChange(rides);
     },
     (err) => {

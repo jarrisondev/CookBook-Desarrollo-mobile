@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MapPin } from 'lucide-react-native';
@@ -6,36 +6,27 @@ import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, RideMap } from '../../../components';
 import { shadows } from '../../../theme';
-import { useAppSelector } from '../../../store';
-import {
-  completeRide,
-  subscribeToRide,
-} from '../../../services/firebase/rides';
+import { completeRide } from '../../../services/firebase/rides';
 import { useDriverRideLocationPublisher } from '../../../hooks/useDriverRideLocationPublisher';
+import { useDriverRideSubscription } from '../../../hooks/useDriverRideSubscription';
+import { metersToKm, secondsToMinutes } from '../../../services/google';
+import type { Route } from '../../../services/google';
+import { coarseCoords } from '../../../utils/coords';
 import { formatCurrency } from '../../../utils/format';
-import type { Ride } from '../../../models';
 import type { DriverStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<DriverStackParamList, 'DriverInProgress'>;
 
 export function DriverInProgressScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const rideId = useAppSelector((s) => s.driver.activeRideId);
-  const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(false);
-  useDriverRideLocationPublisher(rideId);
-
-  useEffect(() => {
-    if (!rideId) {
-      if (navigation.canGoBack()) navigation.goBack();
-      return;
-    }
-    const unsub = subscribeToRide(rideId, (r) => {
-      if (!r) return;
-      setRide(r);
-    });
-    return unsub;
-  }, [rideId, navigation]);
+  const [liveRoute, setLiveRoute] = useState<Route | null>(null);
+  const { ride, rideId } = useDriverRideSubscription();
+  const liveCoords = useDriverRideLocationPublisher(rideId);
+  const routeOrigin = coarseCoords(liveCoords ?? undefined);
+  const handleRouteChange = useCallback((r: Route | null) => setLiveRoute(r), []);
+  const liveEtaMin = liveRoute ? secondsToMinutes(liveRoute.durationSeconds) : undefined;
+  const liveDistanceKm = liveRoute ? metersToKm(liveRoute.distanceMeters) : undefined;
 
   const completeAndNavigate = async () => {
     if (!rideId || !ride) return;
@@ -77,7 +68,14 @@ export function DriverInProgressScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <RideMap ride={ride} />
+      <RideMap
+        ride={ride}
+        routeFrom={routeOrigin}
+        driverLocation={liveCoords ?? undefined}
+        onRouteChange={handleRouteChange}
+        tightFit
+        hidePickupMarker
+      />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 rounded-2xl px-4 py-3 mt-2" style={shadows.card}>
@@ -94,7 +92,7 @@ export function DriverInProgressScreen({ navigation }: Props) {
           style={shadows.card}
         >
           <Text className="text-primary-700 font-semibold text-sm">
-            {t('driver.inProgress.etaToDropoff', { count: ride.etaMin ?? 4 })}
+            {t('driver.inProgress.etaToDropoff', { count: liveEtaMin ?? ride.etaMin ?? 4 })}
           </Text>
         </View>
       </SafeAreaView>
@@ -110,7 +108,7 @@ export function DriverInProgressScreen({ navigation }: Props) {
             {t('driver.inProgress.tripInProgress')}
           </Text>
           <Text className="text-muted dark:text-ink-400 text-sm mb-6">
-            {ride.riderName} · {ride.distanceKm ?? 0} km ·{' '}
+            {ride.riderName} · {liveDistanceKm ?? ride.distanceKm ?? 0} km ·{' '}
             {ride.paymentMethod === 'cash'
               ? t('payment.cash')
               : ride.paymentMethod === 'card'

@@ -34,33 +34,16 @@ export function DriverHomeScreen({ navigation }: Props) {
   const { coords } = useLocation();
 
   useEffect(() => {
-    console.log(`[driver-home] online changed to ${online}`);
     if (!online) return;
-    const unsub = subscribeToOpenRequests(setOpenRequests);
-    return () => {
-      console.log('[driver-home] closing open-requests listener');
-      unsub();
-    };
+    return subscribeToOpenRequests(setOpenRequests);
   }, [online]);
 
   useEffect(() => {
-    if (!online) {
-      console.log('[driver-home] skip navigate: not online');
-      return;
-    }
-    if (activeRideId) {
-      console.log(
-        `[driver-home] skip navigate: activeRideId already set (${activeRideId})`,
-      );
-      return;
-    }
+    if (!online || activeRideId) return;
     const next = openRequests[0];
     if (next) {
-      console.log(`[driver-home] new request -> navigate to IncomingRide (${next.id})`);
       dispatch(setActiveRideId(next.id));
       navigation.navigate('IncomingRide');
-    } else {
-      console.log('[driver-home] no open requests yet');
     }
   }, [online, openRequests, activeRideId, dispatch, navigation]);
 

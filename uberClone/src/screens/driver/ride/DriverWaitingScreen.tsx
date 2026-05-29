@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageCircle, Phone, Star } from 'lucide-react-native';
@@ -11,38 +11,18 @@ import {
   RideMap,
 } from '../../../components';
 import { shadows } from '../../../theme';
-import { useAppDispatch, useAppSelector } from '../../../store';
-import { setActiveRideId } from '../../../store/slices/driverSlice';
-import { startRide, subscribeToRide } from '../../../services/firebase/rides';
+import { startRide } from '../../../services/firebase/rides';
 import { useDriverRideLocationPublisher } from '../../../hooks/useDriverRideLocationPublisher';
-import type { Ride } from '../../../models';
+import { useDriverRideSubscription } from '../../../hooks/useDriverRideSubscription';
 import type { DriverStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<DriverStackParamList, 'DriverWaiting'>;
 
 export function DriverWaitingScreen({ navigation }: Props) {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const rideId = useAppSelector((s) => s.driver.activeRideId);
-  const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(false);
+  const { ride, rideId } = useDriverRideSubscription();
   useDriverRideLocationPublisher(rideId);
-
-  useEffect(() => {
-    if (!rideId) {
-      if (navigation.canGoBack()) navigation.goBack();
-      return;
-    }
-    const unsub = subscribeToRide(rideId, (r) => {
-      if (!r) return;
-      setRide(r);
-      if (r.status === 'cancelled') {
-        dispatch(setActiveRideId(null));
-        if (navigation.canGoBack()) navigation.popToTop();
-      }
-    });
-    return unsub;
-  }, [rideId, navigation, dispatch]);
 
   const handleStart = async () => {
     if (!rideId) return;

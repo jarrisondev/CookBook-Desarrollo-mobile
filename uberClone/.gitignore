@@ -76,3 +76,6 @@ yarn-error.log
 
 # env
 .env
+
+# Claude Code local config
+.claude/

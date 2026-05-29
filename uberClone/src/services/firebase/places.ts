@@ -3,13 +3,11 @@ import {
   collection,
   deleteDoc,
   doc,
-  limit,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   updateDoc,
-  where,
 } from '@firebase/firestore';
 import { db } from './config';
 import type { PlaceType, SavedPlace } from '../../models';
@@ -135,11 +133,3 @@ export async function addRecentPlace(
   return id;
 }
 
-export async function getRecentPlaces(_uid: string, _max = 6) {
-  // Reserved for cases where we don't want a realtime subscription.
-  // Currently the rider uses subscribeToPlaces.
-  return [] as SavedPlace[];
-}
-
-void where; // unused export guard
-void limit;

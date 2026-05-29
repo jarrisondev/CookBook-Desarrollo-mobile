@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageCircle, Phone, Star, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Avatar, Button, IconButton, RideMap } from '../../components';
-import type { Coordinates } from '../../hooks/useLocation';
+import { secondsToMinutes } from '../../services/google';
+import type { Route } from '../../services/google';
 import { shadows } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { resetRide } from '../../store/slices/rideSlice';
@@ -21,8 +22,23 @@ export function RideTrackingScreen({ navigation }: Props) {
   const dispatch = useAppDispatch();
   const rideId = useAppSelector((s) => s.ride.currentRideId);
   const [ride, setRide] = useState<Ride | null>(null);
+  const [liveRoute, setLiveRoute] = useState<Route | null>(null);
 
   useRideSubscription(setRide);
+  const handleRouteChange = useCallback((r: Route | null) => setLiveRoute(r), []);
+  const liveEtaMin = liveRoute ? secondsToMinutes(liveRoute.durationSeconds) : undefined;
+
+  const driverCoords = ride?.driverLocation
+    ? {
+        latitude: ride.driverLocation.lat,
+        longitude: ride.driverLocation.lng,
+      }
+    : undefined;
+
+  const pickupCoords =
+    ride?.pickup.lat !== undefined && ride?.pickup.lng !== undefined
+      ? { latitude: ride.pickup.lat, longitude: ride.pickup.lng }
+      : undefined;
 
   const handleCancel = async () => {
     if (rideId) {
@@ -39,33 +55,17 @@ export function RideTrackingScreen({ navigation }: Props) {
       <RideMap
         ride={ride}
         showMyLocationButton={false}
-        driverLocation={
-          ride?.driverLocation
-            ? ({
-                latitude: ride.driverLocation.lat,
-                longitude: ride.driverLocation.lng,
-              } as Coordinates)
-            : undefined
-        }
-        routeFrom={
-          ride?.driverLocation
-            ? {
-                latitude: ride.driverLocation.lat,
-                longitude: ride.driverLocation.lng,
-              }
-            : undefined
-        }
-        routeTo={
-          ride?.pickup.lat !== undefined && ride?.pickup.lng !== undefined
-            ? { latitude: ride.pickup.lat, longitude: ride.pickup.lng }
-            : undefined
-        }
+        driverLocation={driverCoords}
+        routeFrom={driverCoords}
+        routeTo={pickupCoords}
+        onRouteChange={handleRouteChange}
+        tightFit
       />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 px-4 py-1.5 rounded-full self-center mt-2" style={shadows.card}>
           <Text className="text-white font-semibold text-sm">
-            {t('tracking.minAway', { count: ride?.etaMin ?? 4 })}
+            {t('tracking.minAway', { count: liveEtaMin ?? ride?.etaMin ?? 4 })}
           </Text>
         </View>
       </SafeAreaView>

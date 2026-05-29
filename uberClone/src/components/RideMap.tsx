@@ -3,6 +3,7 @@ import { MapView } from './MapView';
 import type { MapMarker } from './MapView';
 import { useLocation } from '../hooks/useLocation';
 import { getRoute } from '../services/google';
+import type { Route } from '../services/google';
 import type { Coordinates } from '../hooks/useLocation';
 import type { Ride } from '../models';
 
@@ -24,7 +25,26 @@ type Props = {
    * rider side so they can see the driver moving on the map).
    */
   driverLocation?: Coordinates;
+  /**
+   * Called whenever the Directions API result for the current origin →
+   * destination pair changes. Lets the parent screen show the live
+   * distance / ETA without firing a second Directions request.
+   */
+  onRouteChange?: (route: Route | null) => void;
+  /**
+   * Tightens the camera fit by using a smaller edge padding. Used on
+   * "in-progress" screens where the bottom sheet is short and the user
+   * wants to see less of the surrounding city.
+   */
+  tightFit?: boolean;
+  /**
+   * Hide the pickup pin marker. Used once the driver has picked up the
+   * rider so the in-progress map isn't crowded.
+   */
+  hidePickupMarker?: boolean;
 };
+
+const TIGHT_EDGE_PADDING = { top: 90, right: 40, bottom: 240, left: 40 };
 
 function pointToCoord(p?: { lat?: number; lng?: number }): Coordinates | null {
   if (!p || p.lat === undefined || p.lng === undefined) return null;
@@ -37,6 +57,9 @@ export function RideMap({
   routeFrom,
   routeTo,
   driverLocation,
+  onRouteChange,
+  tightFit,
+  hidePickupMarker,
 }: Props) {
   const { coords: myCoords } = useLocation();
   const [polyline, setPolyline] = useState<Coordinates[] | undefined>();
@@ -50,12 +73,15 @@ export function RideMap({
   useEffect(() => {
     if (!origin || !destination) {
       setPolyline(undefined);
+      onRouteChange?.(null);
       return;
     }
     let cancelled = false;
     getRoute(origin, destination)
       .then((r) => {
-        if (!cancelled) setPolyline(r?.polyline);
+        if (cancelled) return;
+        setPolyline(r?.polyline);
+        onRouteChange?.(r);
       })
       .catch((err) => {
         if (!cancelled) console.warn('[ride-map] directions failed:', err);
@@ -68,10 +94,11 @@ export function RideMap({
     origin?.longitude,
     destination?.latitude,
     destination?.longitude,
+    onRouteChange,
   ]);
 
   const markers: MapMarker[] = [];
-  if (pickupCoord) {
+  if (pickupCoord && !hidePickupMarker) {
     markers.push({
       id: 'pickup',
       coordinate: pickupCoord,
@@ -110,6 +137,7 @@ export function RideMap({
       markers={markers}
       routePolyline={polyline}
       fitTo={fitTo.length >= 2 ? fitTo : undefined}
+      edgePadding={tightFit ? TIGHT_EDGE_PADDING : undefined}
       showMyLocationButton={showMyLocationButton}
     />
   );
