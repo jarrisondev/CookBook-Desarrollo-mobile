@@ -31,7 +31,7 @@ export function BottomSheet({
   const collapsedY = SCREEN_HEIGHT - collapsedHeight;
   const expandedY = SCREEN_HEIGHT - expandedHeight;
   const translateY = useSharedValue(initiallyExpanded ? expandedY : collapsedY);
-  const startY = useSharedValue(translateY.value);
+  const startY = useSharedValue(0);
 
   useEffect(() => {
     translateY.value = withSpring(
