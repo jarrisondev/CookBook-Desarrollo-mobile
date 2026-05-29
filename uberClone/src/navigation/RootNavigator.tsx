@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useLanguageSync } from '../i18n/useLanguageSync';
 import { useThemeSync } from '../hooks/useThemeSync';
 import { useIsDark } from '../hooks/useIsDark';
+import { useAuthBootstrap } from '../hooks/useAuthBootstrap';
 import { SplashScreen } from '../screens/auth/SplashScreen';
 import { OnboardingScreen } from '../screens/auth/OnboardingScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
@@ -20,6 +21,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   useLanguageSync();
   useThemeSync();
+  useAuthBootstrap();
   const isDark = useIsDark();
   const role = useAppSelector((s) => s.auth.user?.role);
 

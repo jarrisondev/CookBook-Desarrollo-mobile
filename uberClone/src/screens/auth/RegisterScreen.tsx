@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { Car, ChevronLeft, Lock, Mail, Phone, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -11,9 +11,11 @@ import {
   TextField,
 } from '../../components';
 import { useIconColor } from '../../hooks/useIconColor';
+import { signUpWithEmail } from '../../services/firebase/auth';
 import { useAppDispatch } from '../../store';
-import { signIn } from '../../store/slices/authSlice';
-import type { UserRole } from '../../store/slices/authSlice';
+import { signedIn } from '../../store/slices/authSlice';
+import { serializeUser } from '../../models';
+import type { UserRole } from '../../models';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
@@ -31,6 +33,7 @@ export function RegisterScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const iconColor = useIconColor();
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormState>({
     role: '',
     fullName: '',
@@ -61,21 +64,25 @@ export function RegisterScreen({ navigation }: Props) {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate() || !form.role) return;
-    dispatch(
-      signIn({
-        id: 'demo-' + Date.now(),
-        fullName: form.fullName,
-        email: form.email,
-        phone: form.phone,
+    setLoading(true);
+    try {
+      const profile = await signUpWithEmail({
+        email: form.email.trim(),
+        password: form.password,
+        fullName: form.fullName.trim(),
+        phone: form.phone.trim(),
         gender: form.gender as 'male' | 'female' | 'other',
         role: form.role,
-        level: form.role === 'driver' ? 'Pro Driver' : 'Basic Level',
-        balance: form.role === 'driver' ? 564.78 : 0,
-      }),
-    );
-    navigation.replace('EnableLocation');
+      });
+      dispatch(signedIn(serializeUser(profile)));
+      navigation.replace('EnableLocation');
+    } catch (err) {
+      Alert.alert('Registro', err instanceof Error ? err.message : 'Error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -195,7 +202,7 @@ export function RegisterScreen({ navigation }: Props) {
       </View>
 
       <View className="mt-8">
-        <Button label={t('auth.createAccount')} onPress={handleSubmit} />
+        <Button label={t('auth.createAccount')} onPress={handleSubmit} loading={loading} />
       </View>
 
       <View className="flex-row items-center justify-center mt-6 mb-4">

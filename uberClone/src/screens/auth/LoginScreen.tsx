@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, ScreenContainer, TextField } from '../../components';
+import { signInWithEmail } from '../../services/firebase/auth';
 import { useAppDispatch } from '../../store';
-import { signIn } from '../../store/slices/authSlice';
-import type { UserRole } from '../../store/slices/authSlice';
+import { signedIn } from '../../store/slices/authSlice';
+import { demoAccounts } from '../../constants/demoCredentials';
+import { serializeUser } from '../../models';
+import type { UserRole } from '../../models';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
@@ -14,11 +17,19 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 export function LoginScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [demoRole, setDemoRole] = useState<UserRole>('rider');
+  const [email, setEmail] = useState(demoAccounts.rider.email);
+  const [password, setPassword] = useState(demoAccounts.rider.password);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  const switchRole = (role: UserRole) => {
+    setDemoRole(role);
+    setEmail(demoAccounts[role].email);
+    setPassword(demoAccounts[role].password);
+    setErrors({});
+  };
 
   const validate = () => {
     const next: typeof errors = {};
@@ -29,21 +40,18 @@ export function LoginScreen({ navigation }: Props) {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
-    dispatch(
-      signIn({
-        id: 'demo-' + Date.now(),
-        fullName: demoRole === 'driver' ? 'Mahmud Hasan' : 'Jarrison Cano',
-        email,
-        phone: '+57 300 000 0000',
-        gender: 'male',
-        role: demoRole,
-        level: demoRole === 'driver' ? 'Pro Driver' : 'Basic Level',
-        balance: 564.78,
-      }),
-    );
-    navigation.replace('EnableLocation');
+    setLoading(true);
+    try {
+      const profile = await signInWithEmail(email.trim(), password);
+      dispatch(signedIn(serializeUser(profile)));
+      navigation.replace('EnableLocation');
+    } catch (err) {
+      Alert.alert('Login', err instanceof Error ? err.message : 'Error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,16 +75,14 @@ export function LoginScreen({ navigation }: Props) {
             return (
               <Pressable
                 key={role}
-                onPress={() => setDemoRole(role)}
+                onPress={() => switchRole(role)}
                 className={`flex-1 items-center py-3 rounded-xl ${
                   isSelected ? 'bg-white dark:bg-dark-surface' : ''
                 }`}
               >
                 <Text
                   className={`font-semibold text-sm ${
-                    isSelected
-                      ? 'text-primary-700'
-                      : 'text-muted dark:text-ink-400'
+                    isSelected ? 'text-primary-700' : 'text-muted dark:text-ink-400'
                   }`}
                 >
                   {t(`auth.${role}`)}
@@ -127,7 +133,7 @@ export function LoginScreen({ navigation }: Props) {
       </View>
 
       <View className="mt-8">
-        <Button label={t('auth.signIn')} onPress={handleSubmit} />
+        <Button label={t('auth.signIn')} onPress={handleSubmit} loading={loading} />
       </View>
 
       <View className="flex-row items-center justify-center mt-8">
