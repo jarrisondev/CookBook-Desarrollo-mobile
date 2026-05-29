@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MapPin } from 'lucide-react-native';
@@ -7,23 +7,21 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MapPlaceholder } from '../../components';
 import { shadows } from '../../theme';
 import { useAppSelector } from '../../store';
+import { useRideSubscription } from '../../hooks/useRideSubscription';
+import type { Ride } from '../../models';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'TripInProgress'>;
 
-const TRIP_DURATION_MS = 8000;
-const ETA_MIN = 4;
-
-export function TripInProgressScreen({ navigation }: Props) {
+export function TripInProgressScreen(_: Props) {
   const { t } = useTranslation();
-  const destination = useAppSelector((s) => s.ride.destination);
+  const destinationState = useAppSelector((s) => s.ride.destination);
+  const [ride, setRide] = useState<Ride | null>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('Payment');
-    }, TRIP_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  useRideSubscription(setRide);
+
+  const destinationAddress =
+    ride?.dropoff.address ?? destinationState?.address ?? '—';
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
@@ -35,7 +33,7 @@ export function TripInProgressScreen({ navigation }: Props) {
           <View className="flex-row items-center mt-0.5">
             <MapPin size={16} color="#22C55E" />
             <Text className="text-white font-semibold ml-2 flex-1" numberOfLines={1}>
-              {destination?.address ?? 'Tower Bridge, London'}
+              {destinationAddress}
             </Text>
           </View>
         </View>
@@ -44,7 +42,7 @@ export function TripInProgressScreen({ navigation }: Props) {
           style={shadows.card}
         >
           <Text className="text-primary-700 font-semibold text-sm">
-            {t('inProgress.etaToDestination', { count: ETA_MIN })}
+            {t('inProgress.etaToDestination', { count: ride?.etaMin ?? 4 })}
           </Text>
         </View>
       </SafeAreaView>

@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Check, ChevronLeft, CreditCard, DollarSign, Plus, Wallet as WalletIcon } from 'lucide-react-native';
+import {
+  Check,
+  ChevronLeft,
+  CreditCard,
+  DollarSign,
+  Plus,
+  Wallet as WalletIcon,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -13,23 +20,26 @@ import {
 import { useIconColor } from '../../hooks/useIconColor';
 import { paymentCards } from '../../constants/mockData';
 import { formatCurrency } from '../../utils/format';
+import { useAppSelector } from '../../store';
+import { completeRide } from '../../services/firebase/rides';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Payment'>;
 
 type Method = 'cash' | 'card' | 'wallet';
 
-const fareBreakdown = {
-  base: 4.5,
-  distance: 3.2,
-  discount: -1.0,
-};
-
 export function PaymentScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const iconColor = useIconColor();
+  const rideId = useAppSelector((s) => s.ride.currentRideId);
+  const fareEstimate = useAppSelector((s) => s.ride.fareEstimate);
   const [method, setMethod] = useState<Method>('card');
-  const total = fareBreakdown.base + fareBreakdown.distance + fareBreakdown.discount;
+  const [loading, setLoading] = useState(false);
+
+  const baseFare = fareEstimate > 0 ? fareEstimate : 5.5;
+  const distance = 3.2;
+  const discount = -(baseFare + distance) * 0.15;
+  const total = Math.max(baseFare + distance + discount, 0);
   const defaultCard = paymentCards.find((c) => c.default);
 
   const methods: { id: Method; label: string; icon: typeof CreditCard }[] = [
@@ -37,6 +47,17 @@ export function PaymentScreen({ navigation }: Props) {
     { id: 'card', label: t('payment.card'), icon: CreditCard },
     { id: 'wallet', label: t('payment.wallet'), icon: WalletIcon },
   ];
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    try {
+      if (rideId) {
+        await completeRide(rideId, { finalFare: total });
+      }
+    } catch {}
+    setLoading(false);
+    navigation.replace('Rating');
+  };
 
   return (
     <ScreenContainer scroll>
@@ -47,29 +68,37 @@ export function PaymentScreen({ navigation }: Props) {
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 dark:text-white text-xl font-bold ml-2">{t('payment.title')}</Text>
+        <Text className="text-ink-900 dark:text-white text-xl font-bold ml-2">
+          {t('payment.title')}
+        </Text>
       </View>
 
       <View className="items-center mt-8 mb-8">
         <Text className="text-muted dark:text-ink-400 text-sm">{t('payment.totalToPay')}</Text>
-        <Text className="text-ink-900 dark:text-white text-5xl font-bold mt-1">{formatCurrency(total)}</Text>
+        <Text className="text-ink-900 dark:text-white text-5xl font-bold mt-1">
+          {formatCurrency(total)}
+        </Text>
       </View>
 
       <Card>
-        <Text className="text-ink-900 dark:text-white font-bold text-base mb-3">{t('payment.fareDetails')}</Text>
+        <Text className="text-ink-900 dark:text-white font-bold text-base mb-3">
+          {t('payment.fareDetails')}
+        </Text>
         <View className="flex-row justify-between py-1.5">
           <Text className="text-muted dark:text-ink-400">{t('payment.baseFare')}</Text>
-          <Text className="text-ink-900 dark:text-white font-semibold">{formatCurrency(fareBreakdown.base)}</Text>
+          <Text className="text-ink-900 dark:text-white font-semibold">
+            {formatCurrency(baseFare)}
+          </Text>
         </View>
         <View className="flex-row justify-between py-1.5">
           <Text className="text-muted dark:text-ink-400">{t('payment.distance')}</Text>
-          <Text className="text-ink-900 dark:text-white font-semibold">{formatCurrency(fareBreakdown.distance)}</Text>
+          <Text className="text-ink-900 dark:text-white font-semibold">
+            {formatCurrency(distance)}
+          </Text>
         </View>
         <View className="flex-row justify-between py-1.5">
           <Text className="text-muted dark:text-ink-400">{t('payment.promo')}</Text>
-          <Text className="text-primary-600 font-semibold">
-            {formatCurrency(fareBreakdown.discount)}
-          </Text>
+          <Text className="text-primary-600 font-semibold">{formatCurrency(discount)}</Text>
         </View>
         <Divider className="my-3" />
         <View className="flex-row justify-between">
@@ -78,7 +107,9 @@ export function PaymentScreen({ navigation }: Props) {
         </View>
       </Card>
 
-      <Text className="text-ink-900 dark:text-white font-bold text-base mt-6 mb-3">{t('payment.method')}</Text>
+      <Text className="text-ink-900 dark:text-white font-bold text-base mt-6 mb-3">
+        {t('payment.method')}
+      </Text>
       <View className="flex-row gap-3">
         {methods.map((m) => {
           const Icon = m.icon;
@@ -88,12 +119,16 @@ export function PaymentScreen({ navigation }: Props) {
               key={m.id}
               onPress={() => setMethod(m.id)}
               className={`flex-1 items-center py-4 rounded-2xl border ${
-                isSelected ? 'border-primary-500 bg-primary-50' : 'border-border dark:border-dark-border bg-surface dark:bg-dark-surface'
+                isSelected
+                  ? 'border-primary-500 bg-primary-50'
+                  : 'border-border dark:border-dark-border bg-surface dark:bg-dark-surface'
               }`}
             >
               <Icon size={22} color={isSelected ? '#16A34A' : '#6B7280'} />
               <Text
-                className={`text-sm font-semibold mt-2 ${isSelected ? 'text-primary-700' : 'text-ink-700 dark:text-ink-200'}`}
+                className={`text-sm font-semibold mt-2 ${
+                  isSelected ? 'text-primary-700' : 'text-ink-700 dark:text-ink-200'
+                }`}
               >
                 {m.label}
               </Text>
@@ -109,7 +144,9 @@ export function PaymentScreen({ navigation }: Props) {
               <CreditCard size={18} color="#fff" />
             </View>
             <View className="flex-1">
-              <Text className="text-ink-900 dark:text-white font-semibold">•••• {defaultCard.last4}</Text>
+              <Text className="text-ink-900 dark:text-white font-semibold">
+                •••• {defaultCard.last4}
+              </Text>
               <Text className="text-muted dark:text-ink-400 text-xs">
                 {t('payment.expires', { date: defaultCard.expires })}
               </Text>
@@ -127,7 +164,7 @@ export function PaymentScreen({ navigation }: Props) {
       ) : null}
 
       <View className="mt-8">
-        <Button label={t('payment.confirm')} onPress={() => navigation.replace('Rating')} />
+        <Button label={t('payment.confirm')} onPress={handleConfirm} loading={loading} />
       </View>
     </ScreenContainer>
   );

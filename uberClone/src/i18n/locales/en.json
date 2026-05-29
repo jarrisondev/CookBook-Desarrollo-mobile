@@ -93,7 +93,8 @@
     "seats": "{{count}} seats",
     "minutes": "{{count}} min",
     "book": "Book {{label}} · {{price}}",
-    "promo": "Promo 15%"
+    "promo": "Promo 15%",
+    "paymentMethod": "Payment method"
   },
   "searching": {
     "title": "Looking for a driver…",
@@ -143,7 +144,10 @@
     "tipDriver": "Tip the driver",
     "noTip": "No tip",
     "leaveComment": "Leave a comment",
-    "commentPlaceholder": "Write your comment…"
+    "commentPlaceholder": "Write your comment…",
+    "cardCharged": "We charged {{amount}} to your card •••• {{last4}}",
+    "paidCash": "You paid {{amount}} in cash to the driver",
+    "paidWallet": "We charged {{amount}} from your wallet"
   },
   "tabs": {
     "home": "Home",
@@ -280,10 +284,18 @@
       "messageRider": "Message",
       "cancelRide": "Cancel ride"
     },
+    "waiting": {
+      "title": "Waiting for the rider",
+      "subtitle": "Let them know you've arrived",
+      "startTrip": "Start trip"
+    },
     "inProgress": {
       "tripInProgress": "Trip in progress",
       "endTrip": "End trip",
-      "etaToDropoff": "{{count}} min to drop off"
+      "etaToDropoff": "{{count}} min to drop off",
+      "confirmCashTitle": "Collect cash payment",
+      "confirmCashMessage": "The rider owes you {{amount}} in cash. Did you collect it?",
+      "confirmCash": "Yes, I collected"
     },
     "completed": {
       "tripCompleted": "Trip completed!",

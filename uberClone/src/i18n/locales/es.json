@@ -93,7 +93,8 @@
     "seats": "{{count}} asientos",
     "minutes": "{{count}} min",
     "book": "Pedir {{label}} · {{price}}",
-    "promo": "Promo 15%"
+    "promo": "Promo 15%",
+    "paymentMethod": "Método de pago"
   },
   "searching": {
     "title": "Buscando conductor…",
@@ -143,7 +144,10 @@
     "tipDriver": "Dale propina al conductor",
     "noTip": "Sin propina",
     "leaveComment": "Deja un comentario",
-    "commentPlaceholder": "Escribe tu comentario…"
+    "commentPlaceholder": "Escribe tu comentario…",
+    "cardCharged": "Cobramos {{amount}} de tu tarjeta •••• {{last4}}",
+    "paidCash": "Pagaste {{amount}} en efectivo al conductor",
+    "paidWallet": "Cobramos {{amount}} de tu cartera"
   },
   "tabs": {
     "home": "Inicio",
@@ -280,10 +284,18 @@
       "messageRider": "Mensaje",
       "cancelRide": "Cancelar viaje"
     },
+    "waiting": {
+      "title": "Esperando al pasajero",
+      "subtitle": "Avísale que ya llegaste",
+      "startTrip": "Iniciar viaje"
+    },
     "inProgress": {
       "tripInProgress": "Viaje en curso",
       "endTrip": "Terminar viaje",
-      "etaToDropoff": "{{count}} min al destino"
+      "etaToDropoff": "{{count}} min al destino",
+      "confirmCashTitle": "Cobrar al pasajero",
+      "confirmCashMessage": "El pasajero debe pagarte {{amount}} en efectivo. ¿Ya lo cobraste?",
+      "confirmCash": "Sí, ya cobré"
     },
     "completed": {
       "tripCompleted": "¡Viaje completado!",

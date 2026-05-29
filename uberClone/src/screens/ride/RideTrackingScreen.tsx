@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MessageCircle, Phone, Star, X } from 'lucide-react-native';
@@ -6,29 +6,31 @@ import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Avatar, Button, IconButton, MapPlaceholder } from '../../components';
 import { shadows } from '../../theme';
-import { mockDriver } from '../../constants/mockData';
-import { useAppDispatch } from '../../store';
+import { useAppDispatch, useAppSelector } from '../../store';
 import { resetRide } from '../../store/slices/rideSlice';
+import { cancelRide } from '../../services/firebase/rides';
+import { useRideSubscription } from '../../hooks/useRideSubscription';
+import type { Ride } from '../../models';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'RideTracking'>;
 
-const DRIVER_ARRIVAL_MS = 7000;
-
 export function RideTrackingScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const rideId = useAppSelector((s) => s.ride.currentRideId);
+  const [ride, setRide] = useState<Ride | null>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('DriverArrived');
-    }, DRIVER_ARRIVAL_MS);
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  useRideSubscription(setRide);
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (rideId) {
+      try {
+        await cancelRide(rideId);
+      } catch {}
+    }
     dispatch(resetRide());
-    navigation.popToTop();
+    if (navigation.canGoBack()) navigation.popToTop();
   };
 
   return (
@@ -38,7 +40,7 @@ export function RideTrackingScreen({ navigation }: Props) {
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 px-4 py-1.5 rounded-full self-center mt-2" style={shadows.card}>
           <Text className="text-white font-semibold text-sm">
-            {t('tracking.minAway', { count: mockDriver.etaMin })}
+            {t('tracking.minAway', { count: ride?.etaMin ?? 4 })}
           </Text>
         </View>
       </SafeAreaView>
@@ -55,21 +57,25 @@ export function RideTrackingScreen({ navigation }: Props) {
           </Text>
 
           <View className="flex-row items-center">
-            <Avatar name={mockDriver.name} size={56} />
+            <Avatar name={ride?.driverName ?? '?'} size={56} />
             <View className="flex-1 ml-4">
               <Text className="text-ink-900 dark:text-white font-bold text-lg">
-                {mockDriver.name}
+                {ride?.driverName ?? '—'}
               </Text>
               <View className="flex-row items-center mt-0.5">
                 <Star size={14} color="#F59E0B" fill="#F59E0B" />
                 <Text className="text-ink-700 dark:text-ink-200 text-sm ml-1">
-                  {mockDriver.rating.toFixed(1)}
+                  {(ride?.driverRating ?? 5).toFixed(1)}
                 </Text>
-                <Text className="text-muted dark:text-ink-400 text-sm"> · {mockDriver.car}</Text>
+                {ride?.driverCar ? (
+                  <Text className="text-muted dark:text-ink-400 text-sm"> · {ride.driverCar}</Text>
+                ) : null}
               </View>
-              <Text className="text-muted dark:text-ink-400 text-xs mt-0.5">
-                {mockDriver.plate}
-              </Text>
+              {ride?.driverPlate ? (
+                <Text className="text-muted dark:text-ink-400 text-xs mt-0.5">
+                  {ride.driverPlate}
+                </Text>
+              ) : null}
             </View>
           </View>
 

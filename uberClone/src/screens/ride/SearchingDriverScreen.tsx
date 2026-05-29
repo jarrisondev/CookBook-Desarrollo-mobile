@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -7,29 +6,30 @@ import { Button, MapPlaceholder } from '../../components';
 import { shadows } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { resetRide } from '../../store/slices/rideSlice';
+import { cancelRide } from '../../services/firebase/rides';
+import { useRideSubscription } from '../../hooks/useRideSubscription';
 import { formatCurrency } from '../../utils/format';
 import type { MainStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'SearchingDriver'>;
-
-const SEARCH_DURATION_MS = 5000;
 
 export function SearchingDriverScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const destination = useAppSelector((s) => s.ride.destination);
   const fare = useAppSelector((s) => s.ride.fareEstimate);
+  const rideId = useAppSelector((s) => s.ride.currentRideId);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('RideTracking');
-    }, SEARCH_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  useRideSubscription();
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (rideId) {
+      try {
+        await cancelRide(rideId);
+      } catch {}
+    }
     dispatch(resetRide());
-    navigation.popToTop();
+    if (navigation.canGoBack()) navigation.popToTop();
   };
 
   return (
