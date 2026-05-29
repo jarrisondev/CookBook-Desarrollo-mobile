@@ -62,6 +62,15 @@ export const rideSchema = z.object({
   distanceKm: optionalNumber,
   etaMin: optionalNumber,
 
+  driverLocation: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+      updatedAt: timestampLike.optional(),
+    })
+    .nullish()
+    .transform((v) => v ?? undefined),
+
   rating: optionalNumber,
   comment: optionalString,
 

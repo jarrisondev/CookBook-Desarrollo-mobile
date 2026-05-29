@@ -90,7 +90,7 @@ export function subscribeToPlaces(
  */
 export async function addRecentPlace(
   uid: string,
-  place: { label: string; address: string },
+  place: { label: string; address: string; lat?: number; lng?: number },
   maxRecents = 6,
 ) {
   // Dedupe: don't add if the same address already exists
@@ -103,12 +103,26 @@ export async function addRecentPlace(
   const duplicate = existing.find(
     (p) => p.address.trim().toLowerCase() === place.address.trim().toLowerCase(),
   );
-  if (duplicate) return duplicate.id;
+  if (duplicate) {
+    // If the saved entry is missing coords but we now have them (e.g. user
+    // searched a place that resolved via Geocoding), backfill so future
+    // picks can draw the route immediately.
+    if (
+      (duplicate.lat === undefined || duplicate.lng === undefined) &&
+      place.lat !== undefined &&
+      place.lng !== undefined
+    ) {
+      await updatePlace(uid, duplicate.id, { lat: place.lat, lng: place.lng });
+    }
+    return duplicate.id;
+  }
 
   const id = await addPlace(uid, {
     label: place.label,
     address: place.address,
     type: 'recent',
+    lat: place.lat,
+    lng: place.lng,
   });
 
   // Trim: drop oldest recent entries beyond the cap

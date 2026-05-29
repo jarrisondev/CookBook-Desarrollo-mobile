@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  type LayoutChangeEvent,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Award,
@@ -23,16 +30,19 @@ import { useLocation } from '../../hooks/useLocation';
 import { useUserCards } from '../../hooks/useUserCards';
 import { rideCategories } from '../../constants/mockData';
 import { formatCurrency } from '../../utils/format';
+import { calculateFare } from '../../utils/fare';
 import { useAppDispatch, useAppSelector } from '../../store';
 import {
   setCategory,
   setCurrentRideId,
+  setDestination,
   setFareEstimate,
   setPaymentMethod,
 } from '../../store/slices/rideSlice';
 import { createRide } from '../../services/firebase/rides';
 import { addRecentPlace } from '../../services/firebase/places';
 import {
+  geocodeAddress,
   getRoute,
   metersToKm,
   secondsToMinutes,
@@ -56,6 +66,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
   const iconColor = useIconColor();
   const [loading, setLoading] = useState(false);
   const [routeInfo, setRouteInfo] = useState<Route | null>(null);
+  const [sheetHeight, setSheetHeight] = useState(360);
   const user = useAppSelector((s) => s.auth.user);
   const destinationState = useAppSelector((s) => s.ride.destination);
   const selectedId = useAppSelector((s) => s.ride.selectedCategory);
@@ -71,9 +82,38 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
       ? { latitude: destinationState.lat, longitude: destinationState.lng }
       : null;
 
+  // If we don't have coords for the destination yet (Place Details didn't
+  // return location), fall back to Geocoding the address so we can still
+  // draw the route + compute a real fare.
+  useEffect(() => {
+    if (!destinationState) return;
+    if (destinationState.lat !== undefined && destinationState.lng !== undefined) return;
+    let cancelled = false;
+    geocodeAddress(destinationState.address)
+      .then((coords) => {
+        if (cancelled || !coords) return;
+        dispatch(
+          setDestination({
+            ...destinationState,
+            lat: coords.latitude,
+            lng: coords.longitude,
+          }),
+        );
+      })
+      .catch((err) => {
+        if (!cancelled) console.warn('[geocode] fallback failed:', err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [destinationState, dispatch]);
+
   // Load real route + distance + ETA between pickup and destination
   useEffect(() => {
-    if (!destinationCoord) return;
+    if (!destinationCoord) {
+      setRouteInfo(null);
+      return;
+    }
     let cancelled = false;
     getRoute(pickupCoord, destinationCoord)
       .then((r) => {
@@ -95,6 +135,19 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
   const distanceKm = routeInfo ? metersToKm(routeInfo.distanceMeters) : undefined;
   const etaMin = routeInfo ? secondsToMinutes(routeInfo.durationSeconds) : undefined;
 
+  // Per-category dynamic fare based on the real Directions result.
+  const fareFor = (catId: typeof rideCategories[number]['id']) => {
+    const cat = rideCategories.find((c) => c.id === catId)!;
+    return calculateFare(cat, distanceKm, etaMin);
+  };
+  const selectedFare = fareFor(selected.id);
+
+  // Keep the global fareEstimate in sync so the SearchingDriver screen + ride
+  // doc use the same number we are showing the user here.
+  useEffect(() => {
+    dispatch(setFareEstimate(selectedFare));
+  }, [selectedFare, dispatch]);
+
   const markers: MapMarker[] = [];
   markers.push({
     id: 'pickup',
@@ -111,6 +164,13 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
     });
   }
 
+  // Coords the camera should fit so pickup + dropoff + the route are visible.
+  const fitTo: Coordinates[] = [pickupCoord];
+  if (destinationCoord) fitTo.push(destinationCoord);
+  if (routeInfo?.polyline && routeInfo.polyline.length > 1) {
+    fitTo.push(...routeInfo.polyline);
+  }
+
   const methods: { id: PaymentMethod; label: string; icon: typeof CreditCard }[] = [
     { id: 'cash', label: t('payment.cash'), icon: DollarSign },
     { id: 'card', label: t('payment.card'), icon: CreditCard },
@@ -118,9 +178,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
   ];
 
   const handleSelect = (id: typeof rideCategories[number]['id']) => {
-    const cat = rideCategories.find((c) => c.id === id)!;
     dispatch(setCategory(id));
-    dispatch(setFareEstimate(cat.price));
   };
 
   const handleBook = async () => {
@@ -138,7 +196,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
     }
     setLoading(true);
     try {
-      dispatch(setFareEstimate(selected.price));
+      dispatch(setFareEstimate(selectedFare));
       const rideId = await createRide({
         rider: user,
         pickup: {
@@ -149,9 +207,9 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
         },
         dropoff: destinationState,
         category: selected.id,
-        fareEstimate: selected.price,
+        fareEstimate: selectedFare,
         distanceKm: distanceKm ?? 0,
-        etaMin: etaMin ?? selected.etaMin,
+        etaMin: etaMin ?? selected.defaultEtaMin,
         paymentMethod,
         cardLast4: paymentMethod === 'card' ? defaultCard?.last4 : undefined,
       });
@@ -159,6 +217,8 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
       void addRecentPlace(user.uid, {
         label: destinationState.label,
         address: destinationState.address,
+        lat: destinationState.lat,
+        lng: destinationState.lng,
       }).catch(() => undefined);
       navigation.navigate('SearchingDriver');
     } catch (err) {
@@ -174,6 +234,13 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
         initialCoordinates={pickupCoord}
         markers={markers}
         routePolyline={routeInfo?.polyline}
+        fitTo={fitTo.length >= 2 ? fitTo : undefined}
+        edgePadding={{
+          top: 140,
+          right: 40,
+          bottom: sheetHeight + 24,
+          left: 40,
+        }}
         showMyLocationButton={false}
       />
 
@@ -205,7 +272,13 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
         </View>
       </SafeAreaView>
 
-      <View className="absolute bottom-0 left-0 right-0">
+      <View
+        className="absolute bottom-0 left-0 right-0"
+        onLayout={(e: LayoutChangeEvent) => {
+          const h = e.nativeEvent.layout.height;
+          if (Math.abs(h - sheetHeight) > 4) setSheetHeight(h);
+        }}
+      >
         <ScrollView
           className="bg-surface dark:bg-dark-surface rounded-t-3xl"
           style={shadows.cardLg}
@@ -226,6 +299,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
               const isSelected = cat.id === selectedId;
               const label = t(`ride.categories.${cat.id}`);
               const CategoryIcon = categoryIcons[cat.id];
+              const catFare = fareFor(cat.id);
               return (
                 <Pressable
                   key={cat.id}
@@ -255,10 +329,10 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
                     </Text>
                   </View>
                   <Text className="text-primary-600 font-bold text-base mt-2">
-                    {formatCurrency(cat.price)}
+                    {formatCurrency(catFare)}
                   </Text>
                   <Text className="text-muted dark:text-ink-400 text-xs">
-                    {t('vehicleSelect.minutes', { count: etaMin ?? cat.etaMin })}
+                    {t('vehicleSelect.minutes', { count: etaMin ?? cat.defaultEtaMin })}
                   </Text>
                 </Pressable>
               );
@@ -332,7 +406,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
             <Button
               label={t('vehicleSelect.book', {
                 label: t(`ride.categories.${selected.id}`),
-                price: formatCurrency(selected.price),
+                price: formatCurrency(selectedFare),
               })}
               onPress={handleBook}
               loading={loading}

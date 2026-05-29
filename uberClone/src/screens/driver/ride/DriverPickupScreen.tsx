@@ -19,6 +19,8 @@ import {
   subscribeToRide,
 } from '../../../services/firebase/rides';
 import { useIconColor } from '../../../hooks/useIconColor';
+import { useLocation } from '../../../hooks/useLocation';
+import { useDriverRideLocationPublisher } from '../../../hooks/useDriverRideLocationPublisher';
 import type { Ride } from '../../../models';
 import type { DriverStackParamList } from '../../../navigation/types';
 
@@ -31,6 +33,8 @@ export function DriverPickupScreen({ navigation }: Props) {
   const rideId = useAppSelector((s) => s.driver.activeRideId);
   const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(false);
+  const { coords: driverCoords } = useLocation();
+  useDriverRideLocationPublisher(rideId);
 
   useEffect(() => {
     if (!rideId) {
@@ -74,7 +78,7 @@ export function DriverPickupScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <RideMap ride={ride} />
+      <RideMap ride={ride} routeFrom={driverCoords} routeTo={ride.pickup.lat !== undefined && ride.pickup.lng !== undefined ? { latitude: ride.pickup.lat, longitude: ride.pickup.lng } : undefined} />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="flex-row items-center justify-between mt-2">

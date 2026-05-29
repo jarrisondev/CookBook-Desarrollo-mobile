@@ -1,8 +1,9 @@
-export function formatCurrency(amount: number, currency = 'USD') {
-  return new Intl.NumberFormat('en-US', {
+export function formatCurrency(amount: number, currency = 'COP') {
+  return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency,
-    minimumFractionDigits: 2,
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
   }).format(amount);
 }
 

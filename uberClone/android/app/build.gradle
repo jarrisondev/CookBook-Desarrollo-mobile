@@ -72,6 +72,29 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+/**
+ * Read GOOGLE_MAPS_API_KEY from the project root .env (gitignored). Fallback
+ * to an empty string so debug builds still compile; the map will simply
+ * fail to load with a friendly error if the key isn't present.
+ */
+def loadEnvVar(String name) {
+    def envFile = rootProject.file('../.env')
+    if (!envFile.exists()) return ''
+    def value = ''
+    envFile.eachLine('UTF-8') { line ->
+        if (line && !line.startsWith('#') && line.contains('=')) {
+            def idx = line.indexOf('=')
+            def key = line.substring(0, idx).trim()
+            if (key == name) {
+                value = line.substring(idx + 1).trim()
+            }
+        }
+    }
+    return value
+}
+
+def googleMapsApiKey = loadEnvVar('GOOGLE_MAPS_API_KEY')
+
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -84,6 +107,9 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [
+            GOOGLE_MAPS_API_KEY: googleMapsApiKey
+        ]
     }
     signingConfigs {
         debug {

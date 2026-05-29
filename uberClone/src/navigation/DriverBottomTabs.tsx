@@ -9,6 +9,7 @@ import {
 import type { LucideProps } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useIsDark } from '../hooks/useIsDark';
+import { useDriverActiveRideBootstrap } from '../hooks/useDriverActiveRideBootstrap';
 import { DriverHomeScreen } from '../screens/driver/home/DriverHomeScreen';
 import { EarningsScreen } from '../screens/driver/earnings/EarningsScreen';
 import { DriverHistoryScreen } from '../screens/driver/history/DriverHistoryScreen';
@@ -48,6 +49,7 @@ const renderTabIcon = (
 export function DriverBottomTabs() {
   const { t } = useTranslation();
   const isDark = useIsDark();
+  useDriverActiveRideBootstrap();
 
   return (
     <Tab.Navigator

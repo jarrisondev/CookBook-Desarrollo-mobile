@@ -110,6 +110,19 @@ export async function completeRide(
   });
 }
 
+export async function publishDriverLocation(
+  rideId: string,
+  coords: { lat: number; lng: number },
+) {
+  await updateDoc(doc(db, 'rides', rideId), {
+    driverLocation: {
+      lat: coords.lat,
+      lng: coords.lng,
+      updatedAt: serverTimestamp(),
+    },
+  });
+}
+
 export async function cancelRide(rideId: string) {
   await updateDoc(doc(db, 'rides', rideId), {
     status: 'cancelled' satisfies RideStatus,
@@ -147,6 +160,7 @@ export function subscribeToRide(
 export function subscribeToOpenRequests(
   onChange: (rides: Ride[]) => void,
 ) {
+  console.log('[rides] subscribeToOpenRequests: opening listener');
   const q = query(
     ridesCollection,
     where('status', '==', 'searching'),
@@ -164,9 +178,43 @@ export function subscribeToOpenRequests(
           console.warn('[rides] subscribeToOpenRequests parse failed for', d.id, err);
         }
       });
+      console.log(`[rides] open requests snapshot: ${rides.length} ride(s)`);
       onChange(rides);
     },
-    (err) => console.warn('[rides] subscribeToOpenRequests error:', err),
+    (err) => {
+      const e = err as { code?: string; message?: string };
+      console.warn(
+        `[rides] subscribeToOpenRequests error code=${e.code ?? '?'} message=${e.message ?? err}`,
+      );
+    },
+  );
+}
+
+export function subscribeToActiveRiderRide(
+  riderId: string,
+  onChange: (ride: Ride | null) => void,
+) {
+  const q = query(
+    ridesCollection,
+    where('riderId', '==', riderId),
+    where('status', 'in', ['searching', 'accepted', 'arrived', 'inProgress']),
+    limit(1),
+  );
+  return onSnapshot(
+    q,
+    (snap) => {
+      try {
+        onChange(snap.docs[0]?.data() ?? null);
+      } catch (err) {
+        console.warn('[rides] subscribeToActiveRiderRide parse failed:', err);
+      }
+    },
+    (err) => {
+      const e = err as { code?: string; message?: string };
+      console.warn(
+        `[rides] subscribeToActiveRiderRide error code=${e.code ?? '?'} message=${e.message ?? err}`,
+      );
+    },
   );
 }
 

@@ -1,4 +1,4 @@
-import { googleFetch } from './client';
+import { getApiKey, GoogleApiError, placesNewFetch } from './client';
 import type { Coordinates } from '../../hooks/useLocation';
 
 export type PlacePrediction = {
@@ -15,31 +15,33 @@ export type PlaceDetails = {
   coordinates: Coordinates;
 };
 
-type AutocompleteResponse = {
-  predictions: Array<{
-    place_id: string;
-    description: string;
-    structured_formatting?: {
-      main_text?: string;
-      secondary_text?: string;
+type AutocompleteNewResponse = {
+  suggestions?: Array<{
+    placePrediction?: {
+      placeId?: string;
+      place?: string;
+      text?: { text?: string };
+      structuredFormat?: {
+        mainText?: { text?: string };
+        secondaryText?: { text?: string };
+      };
     };
   }>;
 };
 
-type PlaceDetailsResponse = {
-  result: {
-    place_id: string;
-    name?: string;
-    formatted_address?: string;
-    geometry?: {
-      location?: { lat: number; lng: number };
-    };
-  };
+type PlaceDetailsNewResponse = {
+  id?: string;
+  displayName?: { text?: string };
+  formattedAddress?: string;
+  location?: { latitude: number; longitude: number };
 };
 
 /**
- * Search places matching `input`. Pair with newSessionToken() to bill the
- * search + the final details call as one request.
+ * Places API (New) autocomplete.
+ * Docs: https://developers.google.com/maps/documentation/places/web-service/place-autocomplete
+ *
+ * Pair with newSessionToken() to bill the search + the final details call
+ * as one request.
  */
 export async function autocomplete(
   input: string,
@@ -51,51 +53,93 @@ export async function autocomplete(
   },
 ): Promise<PlacePrediction[]> {
   if (!input.trim()) return [];
-  const params: Record<string, string | undefined> = {
+  const body: Record<string, unknown> = {
     input,
-    sessiontoken: options.sessionToken,
-    language: options.language ?? 'es',
+    sessionToken: options.sessionToken,
+    languageCode: options.language ?? 'es',
   };
   if (options.location) {
-    params.location = `${options.location.latitude},${options.location.longitude}`;
-    params.radius = String(options.radiusMeters ?? 30000);
+    body.locationBias = {
+      circle: {
+        center: {
+          latitude: options.location.latitude,
+          longitude: options.location.longitude,
+        },
+        radius: options.radiusMeters ?? 30000,
+      },
+    };
   }
-  const data = await googleFetch<AutocompleteResponse>(
-    '/place/autocomplete/json',
-    params,
+  const data = await placesNewFetch<AutocompleteNewResponse>(
+    '/places:autocomplete',
+    body,
   );
-  return (data.predictions ?? []).map((p) => ({
-    placeId: p.place_id,
-    mainText: p.structured_formatting?.main_text ?? p.description,
-    secondaryText: p.structured_formatting?.secondary_text ?? '',
-    description: p.description,
-  }));
+  return (data.suggestions ?? [])
+    .map((s) => s.placePrediction)
+    .filter(
+      (p): p is NonNullable<typeof p> =>
+        !!p && !!(p.placeId ?? p.place) && !!p.text?.text,
+    )
+    .map((p) => {
+      const placeId = p.placeId ?? (p.place ?? '').replace(/^places\//, '');
+      const description = p.text?.text ?? '';
+      return {
+        placeId,
+        mainText: p.structuredFormat?.mainText?.text ?? description,
+        secondaryText: p.structuredFormat?.secondaryText?.text ?? '',
+        description,
+      };
+    });
 }
 
 /**
- * Resolve a Place ID into name + address + coordinates.
- * Use the same sessionToken you used for autocomplete to keep the same
- * billed session.
+ * Places API (New) place details.
+ * Use the same sessionToken from the autocomplete call to bill as one
+ * session.
  */
 export async function getPlaceDetails(
   placeId: string,
   sessionToken: string,
 ): Promise<PlaceDetails | null> {
-  const data = await googleFetch<PlaceDetailsResponse>('/place/details/json', {
-    place_id: placeId,
-    sessiontoken: sessionToken,
-    fields: 'place_id,name,formatted_address,geometry/location',
-    language: 'es',
+  if (!getApiKey()) {
+    throw new GoogleApiError('NO_API_KEY', 'GOOGLE_MAPS_API_KEY is missing');
+  }
+  const url = `https://places.googleapis.com/v1/places/${encodeURIComponent(
+    placeId,
+  )}?sessionToken=${encodeURIComponent(sessionToken)}`;
+  const res = await fetch(url, {
+    headers: {
+      'X-Goog-Api-Key': getApiKey(),
+      'X-Goog-FieldMask': 'id,displayName,formattedAddress,location',
+    },
   });
-  const r = data.result;
-  if (!r || !r.geometry?.location) return null;
+  const json = (await res.json()) as
+    | PlaceDetailsNewResponse
+    | { error?: { status?: string; message?: string } };
+  if (!res.ok) {
+    const err = (json as { error?: { status?: string; message?: string } })
+      .error;
+    const status = err?.status ?? `HTTP_${res.status}`;
+    console.warn(
+      `[google] places-new /places/${placeId} status=${status} ${err?.message ?? ''}`,
+    );
+    throw new GoogleApiError(status, err?.message ?? `HTTP ${res.status}`);
+  }
+  const data = json as PlaceDetailsNewResponse;
+  if (!data.location) {
+    console.warn(
+      `[google] places-new /places/${placeId} returned no location, keys=${Object.keys(
+        data,
+      ).join(',')}`,
+    );
+    return null;
+  }
   return {
-    placeId: r.place_id,
-    name: r.name ?? r.formatted_address ?? '',
-    address: r.formatted_address ?? r.name ?? '',
+    placeId: data.id ?? placeId,
+    name: data.displayName?.text ?? data.formattedAddress ?? '',
+    address: data.formattedAddress ?? data.displayName?.text ?? '',
     coordinates: {
-      latitude: r.geometry.location.lat,
-      longitude: r.geometry.location.lng,
+      latitude: data.location.latitude,
+      longitude: data.location.longitude,
     },
   };
 }

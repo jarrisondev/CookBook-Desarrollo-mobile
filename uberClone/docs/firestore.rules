@@ -23,6 +23,16 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow create: if isMe(uid);
       allow update, delete: if isMe(uid);
+
+      // Saved payment cards (subcollection): only the owner can read/write.
+      match /cards/{cardId} {
+        allow read, write: if isMe(uid);
+      }
+
+      // Saved + recent places (subcollection): only the owner can read/write.
+      match /places/{placeId} {
+        allow read, write: if isMe(uid);
+      }
     }
 
     match /rides/{rideId} {
@@ -48,7 +58,7 @@ service cloud.firestore {
         (resource.data.driverId == request.auth.uid
           && request.resource.data.diff(resource.data).changedKeys()
               .hasOnly(['status', 'arrivedAt', 'startedAt', 'completedAt',
-                        'finalFare', 'tip', 'cancelledAt']))
+                        'finalFare', 'tip', 'cancelledAt', 'driverLocation']))
       );
 
       allow delete: if false;

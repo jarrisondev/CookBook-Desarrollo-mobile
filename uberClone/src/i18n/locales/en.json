@@ -86,7 +86,8 @@
     "placeholder": "Search destination",
     "suggestions": "Suggestions",
     "recentAndSaved": "Recent and saved",
-    "emptyHint": "Your past destinations will show up here"
+    "emptyHint": "Your past destinations will show up here",
+    "noResults": "No results found for your search"
   },
   "vehicleSelect": {
     "title": "Choose your ride",

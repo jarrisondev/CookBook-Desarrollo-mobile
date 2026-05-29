@@ -14,6 +14,7 @@ import { shadows } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import { setActiveRideId } from '../../../store/slices/driverSlice';
 import { startRide, subscribeToRide } from '../../../services/firebase/rides';
+import { useDriverRideLocationPublisher } from '../../../hooks/useDriverRideLocationPublisher';
 import type { Ride } from '../../../models';
 import type { DriverStackParamList } from '../../../navigation/types';
 
@@ -25,6 +26,7 @@ export function DriverWaitingScreen({ navigation }: Props) {
   const rideId = useAppSelector((s) => s.driver.activeRideId);
   const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(false);
+  useDriverRideLocationPublisher(rideId);
 
   useEffect(() => {
     if (!rideId) {

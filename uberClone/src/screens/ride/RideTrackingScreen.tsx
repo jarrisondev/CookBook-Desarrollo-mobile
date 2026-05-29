@@ -5,6 +5,7 @@ import { MessageCircle, Phone, Star, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Avatar, Button, IconButton, RideMap } from '../../components';
+import type { Coordinates } from '../../hooks/useLocation';
 import { shadows } from '../../theme';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { resetRide } from '../../store/slices/rideSlice';
@@ -35,7 +36,31 @@ export function RideTrackingScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <RideMap ride={ride} showMyLocationButton={false} />
+      <RideMap
+        ride={ride}
+        showMyLocationButton={false}
+        driverLocation={
+          ride?.driverLocation
+            ? ({
+                latitude: ride.driverLocation.lat,
+                longitude: ride.driverLocation.lng,
+              } as Coordinates)
+            : undefined
+        }
+        routeFrom={
+          ride?.driverLocation
+            ? {
+                latitude: ride.driverLocation.lat,
+                longitude: ride.driverLocation.lng,
+              }
+            : undefined
+        }
+        routeTo={
+          ride?.pickup.lat !== undefined && ride?.pickup.lng !== undefined
+            ? { latitude: ride.pickup.lat, longitude: ride.pickup.lng }
+            : undefined
+        }
+      />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 px-4 py-1.5 rounded-full self-center mt-2" style={shadows.card}>

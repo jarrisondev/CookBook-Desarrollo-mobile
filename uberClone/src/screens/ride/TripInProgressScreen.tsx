@@ -25,7 +25,26 @@ export function TripInProgressScreen(_: Props) {
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">
-      <RideMap ride={ride} showMyLocationButton={false} />
+      <RideMap
+        ride={ride}
+        showMyLocationButton={false}
+        driverLocation={
+          ride?.driverLocation
+            ? {
+                latitude: ride.driverLocation.lat,
+                longitude: ride.driverLocation.lng,
+              }
+            : undefined
+        }
+        routeFrom={
+          ride?.driverLocation
+            ? {
+                latitude: ride.driverLocation.lat,
+                longitude: ride.driverLocation.lng,
+              }
+            : undefined
+        }
+      />
 
       <SafeAreaView edges={['top']} className="absolute top-0 left-0 right-0 px-5">
         <View className="bg-ink-900 rounded-2xl px-4 py-3 mt-2" style={shadows.card}>

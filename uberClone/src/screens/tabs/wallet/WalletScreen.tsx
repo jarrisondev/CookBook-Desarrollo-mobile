@@ -101,7 +101,7 @@ export function WalletScreen({ navigation }: Props) {
                 {t('wallet.thisMonth')}
               </Text>
               <Text className="text-ink-900 dark:text-white font-bold mt-0.5">
-                {formatCurrency(124.5)}
+                {formatCurrency(374500)}
               </Text>
             </View>
             <View>
@@ -115,7 +115,7 @@ export function WalletScreen({ navigation }: Props) {
                 {t('wallet.bonus')}
               </Text>
               <Text className="text-primary-600 font-bold mt-0.5">
-                +{formatCurrency(12)}
+                +{formatCurrency(36000)}
               </Text>
             </View>
           </View>

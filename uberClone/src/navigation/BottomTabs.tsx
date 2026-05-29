@@ -4,6 +4,7 @@ import { Clock, Home as HomeIcon, User, Wallet } from 'lucide-react-native';
 import type { LucideProps } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useIsDark } from '../hooks/useIsDark';
+import { useRiderActiveRideBootstrap } from '../hooks/useRiderActiveRideBootstrap';
 import { HomeScreen } from '../screens/tabs/home/HomeScreen';
 import { WalletScreen } from '../screens/tabs/wallet/WalletScreen';
 import { HistoryScreen } from '../screens/tabs/history/HistoryScreen';
@@ -43,6 +44,7 @@ const renderTabIcon = (
 export function BottomTabs() {
   const { t } = useTranslation();
   const isDark = useIsDark();
+  useRiderActiveRideBootstrap();
 
   return (
     <Tab.Navigator

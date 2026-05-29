@@ -14,10 +14,7 @@ import {
   setActiveRideId,
   setOnline,
 } from '../../../store/slices/driverSlice';
-import {
-  subscribeToActiveDriverRide,
-  subscribeToOpenRequests,
-} from '../../../services/firebase/rides';
+import { subscribeToOpenRequests } from '../../../services/firebase/rides';
 import { driverStats, weeklyEarnings } from '../../../constants/driverMockData';
 import { formatCurrency } from '../../../utils/format';
 import type { Ride } from '../../../models';
@@ -37,29 +34,35 @@ export function DriverHomeScreen({ navigation }: Props) {
   const { coords } = useLocation();
 
   useEffect(() => {
+    console.log(`[driver-home] online changed to ${online}`);
     if (!online) return;
     const unsub = subscribeToOpenRequests(setOpenRequests);
-    return unsub;
+    return () => {
+      console.log('[driver-home] closing open-requests listener');
+      unsub();
+    };
   }, [online]);
 
   useEffect(() => {
-    if (!online || activeRideId) return;
+    if (!online) {
+      console.log('[driver-home] skip navigate: not online');
+      return;
+    }
+    if (activeRideId) {
+      console.log(
+        `[driver-home] skip navigate: activeRideId already set (${activeRideId})`,
+      );
+      return;
+    }
     const next = openRequests[0];
     if (next) {
+      console.log(`[driver-home] new request -> navigate to IncomingRide (${next.id})`);
       dispatch(setActiveRideId(next.id));
       navigation.navigate('IncomingRide');
+    } else {
+      console.log('[driver-home] no open requests yet');
     }
   }, [online, openRequests, activeRideId, dispatch, navigation]);
-
-  useEffect(() => {
-    if (!user || user.role !== 'driver') return;
-    const unsub = subscribeToActiveDriverRide(user.uid, (ride) => {
-      if (ride && activeRideId !== ride.id) {
-        dispatch(setActiveRideId(ride.id));
-      }
-    });
-    return unsub;
-  }, [user, activeRideId, dispatch]);
 
   return (
     <View className="flex-1 bg-bg dark:bg-dark-bg">

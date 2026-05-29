@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="uberClone-demo" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Medellín demo waypoints</name>
+    <desc>Puntos para usar con el simulador (Extended controls > Location > Import GPX/KML)</desc>
+  </metadata>
+
+  <wpt lat="6.2476" lon="-75.5658">
+    <name>Plaza Botero (Centro)</name>
+    <desc>Centro de Medellín</desc>
+  </wpt>
+
+  <wpt lat="6.2852" lon="-75.5609">
+    <name>Aranjuez</name>
+    <desc>Barrio Aranjuez, Comuna 4</desc>
+  </wpt>
+
+  <wpt lat="6.2086" lon="-75.5680">
+    <name>Parque Lleras (El Poblado)</name>
+    <desc>Zona Rosa de El Poblado</desc>
+  </wpt>
+
+  <wpt lat="6.2444" lon="-75.5897">
+    <name>Primer Parque de Laureles</name>
+    <desc>Barrio Laureles</desc>
+  </wpt>
+
+  <wpt lat="6.2566" lon="-75.5897">
+    <name>Estadio Atanasio Girardot</name>
+    <desc>Estadio del DIM y Nacional</desc>
+  </wpt>
+
+  <wpt lat="6.2670" lon="-75.5687">
+    <name>Universidad de Antioquia</name>
+    <desc>Ciudad Universitaria</desc>
+  </wpt>
+
+  <wpt lat="6.1701" lon="-75.4286">
+    <name>Aeropuerto JMC (Rionegro)</name>
+    <desc>Aeropuerto Internacional José María Córdova</desc>
+  </wpt>
+
+  <wpt lat="6.2202" lon="-75.5854">
+    <name>Centro Comercial Santafé</name>
+    <desc>Sector Patio Bonito, El Poblado</desc>
+  </wpt>
+</gpx>

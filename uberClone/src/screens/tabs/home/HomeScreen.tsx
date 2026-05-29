@@ -15,7 +15,7 @@ import { useLocation } from '../../../hooks/useLocation';
 import { useSavedPlaces } from '../../../hooks/useSavedPlaces';
 import { useAppDispatch } from '../../../store';
 import { setDestination } from '../../../store/slices/rideSlice';
-import type { PlaceType } from '../../../models';
+import type { PlaceType, SavedPlace } from '../../../models';
 import type { TabScreenProps } from '../../../navigation/types';
 
 type Props = TabScreenProps<'Home'>;
@@ -33,9 +33,16 @@ export function HomeScreen({ navigation }: Props) {
   const { places } = useSavedPlaces();
   const { coords } = useLocation();
 
-  const handlePickPlace = (label: string, address: string) => {
-    dispatch(setDestination({ label, address }));
-    navigation.navigate('VehicleSelect', { destination: address });
+  const handlePickPlace = (place: SavedPlace) => {
+    dispatch(
+      setDestination({
+        label: place.label,
+        address: place.address,
+        lat: place.lat,
+        lng: place.lng,
+      }),
+    );
+    navigation.navigate('VehicleSelect', { destination: place.address });
   };
 
   return (
@@ -85,7 +92,7 @@ export function HomeScreen({ navigation }: Props) {
                 {places.map((place) => (
                   <Pressable
                     key={place.id}
-                    onPress={() => handlePickPlace(place.label, place.address)}
+                    onPress={() => handlePickPlace(place)}
                     className="items-center"
                     style={{ width: 76 }}
                   >

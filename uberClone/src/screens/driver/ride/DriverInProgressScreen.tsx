@@ -11,6 +11,7 @@ import {
   completeRide,
   subscribeToRide,
 } from '../../../services/firebase/rides';
+import { useDriverRideLocationPublisher } from '../../../hooks/useDriverRideLocationPublisher';
 import { formatCurrency } from '../../../utils/format';
 import type { Ride } from '../../../models';
 import type { DriverStackParamList } from '../../../navigation/types';
@@ -22,6 +23,7 @@ export function DriverInProgressScreen({ navigation }: Props) {
   const rideId = useAppSelector((s) => s.driver.activeRideId);
   const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(false);
+  useDriverRideLocationPublisher(rideId);
 
   useEffect(() => {
     if (!rideId) {

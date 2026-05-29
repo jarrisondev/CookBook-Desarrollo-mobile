@@ -5,13 +5,13 @@ export type DailyEarning = {
 };
 
 export const weeklyEarnings: DailyEarning[] = [
-  { day: 'Mon', amount: 56.4, rides: 8 },
-  { day: 'Tue', amount: 41.2, rides: 6 },
-  { day: 'Wed', amount: 72.5, rides: 11 },
-  { day: 'Thu', amount: 38.8, rides: 5 },
-  { day: 'Fri', amount: 124.6, rides: 17 },
-  { day: 'Sat', amount: 89.3, rides: 13 },
-  { day: 'Sun', amount: 62.0, rides: 9 },
+  { day: 'Mon', amount: 168000, rides: 8 },
+  { day: 'Tue', amount: 124000, rides: 6 },
+  { day: 'Wed', amount: 218000, rides: 11 },
+  { day: 'Thu', amount: 116000, rides: 5 },
+  { day: 'Fri', amount: 374000, rides: 17 },
+  { day: 'Sat', amount: 268000, rides: 13 },
+  { day: 'Sun', amount: 186000, rides: 9 },
 ];
 
 export const driverStats = {

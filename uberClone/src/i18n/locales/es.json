@@ -86,7 +86,8 @@
     "placeholder": "Buscar destino",
     "suggestions": "Sugerencias",
     "recentAndSaved": "Recientes y guardados",
-    "emptyHint": "Cuando hagas un viaje, los destinos quedarán aquí"
+    "emptyHint": "Cuando hagas un viaje, los destinos quedarán aquí",
+    "noResults": "No encontramos resultados para tu búsqueda"
   },
   "vehicleSelect": {
     "title": "Elige tu viaje",
