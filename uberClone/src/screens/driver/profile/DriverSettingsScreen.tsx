@@ -19,7 +19,8 @@ import {
 } from '../../../components';
 import { useIconColor } from '../../../hooks/useIconColor';
 import { useAppDispatch } from '../../../store';
-import { signOut } from '../../../store/slices/authSlice';
+import { signedOut } from '../../../store/slices/authSlice';
+import { signOut as fbSignOut } from '../../../services/firebase/auth';
 import { resetDriver } from '../../../store/slices/driverSlice';
 import type { DriverStackParamList } from '../../../navigation/types';
 
@@ -30,9 +31,10 @@ export function DriverSettingsScreen({ navigation }: Props) {
   const dispatch = useAppDispatch();
   const iconColor = useIconColor();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await fbSignOut();
     dispatch(resetDriver());
-    dispatch(signOut());
+    dispatch(signedOut());
     navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Login' as never }] });
   };
 

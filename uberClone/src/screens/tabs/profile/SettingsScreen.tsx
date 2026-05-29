@@ -19,7 +19,8 @@ import {
 } from '../../../components';
 import { useIconColor } from '../../../hooks/useIconColor';
 import { useAppDispatch } from '../../../store';
-import { signOut } from '../../../store/slices/authSlice';
+import { signedOut } from '../../../store/slices/authSlice';
+import { signOut as fbSignOut } from '../../../services/firebase/auth';
 import type { MainStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'Settings'>;
@@ -29,8 +30,9 @@ export function SettingsScreen({ navigation }: Props) {
   const dispatch = useAppDispatch();
   const iconColor = useIconColor();
 
-  const handleLogout = () => {
-    dispatch(signOut());
+  const handleLogout = async () => {
+    await fbSignOut();
+    dispatch(signedOut());
     navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Login' as never }] });
   };
 
