@@ -1,6 +1,5 @@
 import { Text, View } from 'react-native';
 import {
-  Bell,
   ChevronLeft,
   CircleHelp,
   FileText,
@@ -15,6 +14,7 @@ import {
   Divider,
   IconButton,
   ListItem,
+  PreferencesSection,
   ScreenContainer,
 } from '../../../components';
 import { useIconColor } from '../../../hooks/useIconColor';
@@ -52,13 +52,11 @@ export function DriverSettingsScreen({ navigation }: Props) {
         </Text>
       </View>
 
+      <View className="mt-6">
+        <PreferencesSection />
+      </View>
+
       <View className="mt-6 gap-2">
-        <ListItem
-          title={t('settings.notifications')}
-          subtitle={t('settings.notificationsSubtitle')}
-          leftIcon={<Bell size={18} color={iconColor.primary} />}
-          onPress={() => undefined}
-        />
         <ListItem
           title={t('settings.privacy')}
           subtitle={t('settings.privacySubtitle')}

@@ -11,6 +11,7 @@ export { Divider } from './Divider';
 export { IconButton } from './IconButton';
 export { ListItem } from './ListItem';
 export { MapPlaceholder } from './MapPlaceholder';
+export { PreferencesSection } from './PreferencesSection';
 export { ScreenContainer } from './ScreenContainer';
 export { SectionHeader } from './SectionHeader';
 export { Select } from './Select';
