@@ -56,6 +56,7 @@ export const rideSchema = z.object({
   finalFare: optionalNumber,
   tip: optionalNumber,
   paymentMethod: paymentMethodSchema.default('cash'),
+  cardLast4: optionalString,
   bonusPercent: optionalNumber,
 
   distanceKm: optionalNumber,

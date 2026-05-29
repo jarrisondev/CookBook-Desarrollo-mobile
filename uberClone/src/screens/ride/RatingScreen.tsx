@@ -7,7 +7,7 @@ import { Avatar, Button, ScreenContainer } from '../../components';
 import { resetRide } from '../../store/slices/rideSlice';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { rateRide, subscribeToRide } from '../../services/firebase/rides';
-import { paymentCards } from '../../constants/mockData';
+import { useUserCards } from '../../hooks/useUserCards';
 import { formatCurrency } from '../../utils/format';
 import type { Ride } from '../../models';
 import type { MainStackParamList } from '../../navigation/types';
@@ -34,15 +34,16 @@ export function RatingScreen({ navigation }: Props) {
     return unsub;
   }, [rideId]);
 
+  const { defaultCard } = useUserCards();
   const total = ride?.finalFare ?? ride?.fareEstimate ?? 0;
   const method = ride?.paymentMethod ?? 'cash';
-  const defaultCard = paymentCards.find((c) => c.default);
+  const last4 = ride?.cardLast4 ?? defaultCard?.last4 ?? '••••';
 
   const paymentMessage = (() => {
-    if (method === 'card' && defaultCard) {
+    if (method === 'card') {
       return t('rating.cardCharged', {
         amount: formatCurrency(total),
-        last4: defaultCard.last4,
+        last4,
       });
     }
     if (method === 'wallet') {

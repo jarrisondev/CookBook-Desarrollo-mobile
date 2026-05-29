@@ -18,7 +18,7 @@ import {
   ScreenContainer,
 } from '../../components';
 import { useIconColor } from '../../hooks/useIconColor';
-import { paymentCards } from '../../constants/mockData';
+import { useUserCards } from '../../hooks/useUserCards';
 import { formatCurrency } from '../../utils/format';
 import { useAppSelector } from '../../store';
 import { completeRide } from '../../services/firebase/rides';
@@ -40,7 +40,7 @@ export function PaymentScreen({ navigation }: Props) {
   const distance = 3.2;
   const discount = -(baseFare + distance) * 0.15;
   const total = Math.max(baseFare + distance + discount, 0);
-  const defaultCard = paymentCards.find((c) => c.default);
+  const { defaultCard } = useUserCards();
 
   const methods: { id: Method; label: string; icon: typeof CreditCard }[] = [
     { id: 'cash', label: t('payment.cash'), icon: DollarSign },

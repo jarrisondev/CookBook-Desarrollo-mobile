@@ -38,6 +38,7 @@ export type CreateRideInput = {
   distanceKm?: number;
   etaMin?: number;
   paymentMethod?: PaymentMethod;
+  cardLast4?: string;
   bonusPercent?: number;
 };
 
@@ -54,6 +55,7 @@ export async function createRide(input: CreateRideInput): Promise<string> {
     category: input.category,
     fareEstimate: input.fareEstimate,
     paymentMethod: input.paymentMethod ?? 'cash',
+    cardLast4: input.cardLast4,
     distanceKm: input.distanceKm,
     etaMin: input.etaMin,
     bonusPercent: input.bonusPercent,

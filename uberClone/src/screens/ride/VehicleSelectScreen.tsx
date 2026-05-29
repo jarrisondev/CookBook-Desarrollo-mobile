@@ -14,7 +14,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, IconButton, MapPlaceholder } from '../../components';
 import { shadows } from '../../theme';
 import { useIconColor } from '../../hooks/useIconColor';
-import { rideCategories, paymentCards } from '../../constants/mockData';
+import { useUserCards } from '../../hooks/useUserCards';
+import { rideCategories } from '../../constants/mockData';
 import { formatCurrency } from '../../utils/format';
 import { useAppDispatch, useAppSelector } from '../../store';
 import {
@@ -24,6 +25,7 @@ import {
   setPaymentMethod,
 } from '../../store/slices/rideSlice';
 import { createRide } from '../../services/firebase/rides';
+import { addRecentPlace } from '../../services/firebase/places';
 import type { PaymentMethod } from '../../models';
 import type { MainStackParamList } from '../../navigation/types';
 
@@ -40,7 +42,7 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
   const paymentMethod = useAppSelector((s) => s.ride.paymentMethod);
   const selected = rideCategories.find((c) => c.id === selectedId) ?? rideCategories[0];
   const destinationAddress = route.params?.destination ?? destinationState?.address ?? '—';
-  const defaultCard = paymentCards.find((c) => c.default);
+  const { defaultCard } = useUserCards();
 
   const methods: { id: PaymentMethod; label: string; icon: typeof CreditCard }[] = [
     { id: 'cash', label: t('payment.cash'), icon: DollarSign },
@@ -63,6 +65,10 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
       Alert.alert('Viaje', 'Elige un destino primero');
       return;
     }
+    if (paymentMethod === 'card' && !defaultCard) {
+      Alert.alert(t('vehicleSelect.paymentMethod'), t('wallet.noCards'));
+      return;
+    }
     setLoading(true);
     try {
       dispatch(setFareEstimate(selected.price));
@@ -75,8 +81,13 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
         distanceKm: 3.2,
         etaMin: selected.etaMin,
         paymentMethod,
+        cardLast4: paymentMethod === 'card' ? defaultCard?.last4 : undefined,
       });
       dispatch(setCurrentRideId(rideId));
+      void addRecentPlace(user.uid, {
+        label: destinationState.label,
+        address: destinationState.address,
+      }).catch(() => undefined);
       navigation.navigate('SearchingDriver');
     } catch (err) {
       Alert.alert('Viaje', err instanceof Error ? err.message : 'Error');
@@ -191,18 +202,30 @@ export function VehicleSelectScreen({ navigation, route }: Props) {
             })}
           </View>
 
-          {paymentMethod === 'card' && defaultCard ? (
-            <View className="mt-3 flex-row items-center bg-ink-50 dark:bg-ink-700 rounded-2xl px-4 py-3">
-              <View className="w-8 h-8 bg-ink-900 rounded-lg items-center justify-center mr-3">
-                <CreditCard size={16} color="#fff" />
+          {paymentMethod === 'card' ? (
+            defaultCard ? (
+              <View className="mt-3 flex-row items-center bg-ink-50 dark:bg-ink-700 rounded-2xl px-4 py-3">
+                <View className="w-8 h-8 bg-ink-900 rounded-lg items-center justify-center mr-3">
+                  <CreditCard size={16} color="#fff" />
+                </View>
+                <Text className="text-ink-900 dark:text-white font-semibold flex-1">
+                  •••• {defaultCard.last4}
+                </Text>
+                <Text className="text-muted dark:text-ink-400 text-xs">
+                  {defaultCard.expires}
+                </Text>
               </View>
-              <Text className="text-ink-900 dark:text-white font-semibold flex-1">
-                •••• {defaultCard.last4}
-              </Text>
-              <Text className="text-muted dark:text-ink-400 text-xs">
-                {defaultCard.expires}
-              </Text>
-            </View>
+            ) : (
+              <Pressable
+                onPress={() => navigation.navigate('AddCard')}
+                className="mt-3 flex-row items-center justify-center bg-primary-50 rounded-2xl px-4 py-3"
+              >
+                <CreditCard size={18} color="#16A34A" />
+                <Text className="text-primary-700 font-semibold ml-2">
+                  {t('wallet.addNewCard')}
+                </Text>
+              </Pressable>
+            )
           ) : null}
 
           <View className="mt-4 flex-row items-center justify-end">
