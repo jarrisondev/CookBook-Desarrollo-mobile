@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { IconButton, ScreenContainer, TextField } from '../../components';
 import { useIconColor } from '../../hooks/useIconColor';
-import { savedPlaces } from '../../constants/mockData';
+import { useSavedPlaces } from '../../hooks/useSavedPlaces';
 import { useAppDispatch } from '../../store';
 import { setDestination } from '../../store/slices/rideSlice';
 import type { MainStackParamList } from '../../navigation/types';
@@ -16,14 +16,15 @@ export function SearchDestinationScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const iconColor = useIconColor();
+  const { places } = useSavedPlaces();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return savedPlaces;
-    return savedPlaces.filter((p) =>
+    if (!query.trim()) return places;
+    return places.filter((p) =>
       `${p.label} ${p.address}`.toLowerCase().includes(query.toLowerCase()),
     );
-  }, [query]);
+  }, [places, query]);
 
   const handlePick = (label: string, address: string) => {
     dispatch(setDestination({ label, address }));
@@ -39,7 +40,9 @@ export function SearchDestinationScreen({ navigation }: Props) {
           elevated={false}
           size={40}
         />
-        <Text className="text-ink-900 dark:text-white text-xl font-bold ml-2">{t('search.title')}</Text>
+        <Text className="text-ink-900 dark:text-white text-xl font-bold ml-2">
+          {t('search.title')}
+        </Text>
       </View>
 
       <TextField
@@ -70,11 +73,20 @@ export function SearchDestinationScreen({ navigation }: Props) {
               )}
             </View>
             <View className="flex-1">
-              <Text className="text-ink-900 dark:text-white font-semibold text-base">{item.label}</Text>
+              <Text className="text-ink-900 dark:text-white font-semibold text-base">
+                {item.label}
+              </Text>
               <Text className="text-muted dark:text-ink-400 text-xs">{item.address}</Text>
             </View>
           </Pressable>
         )}
+        ListEmptyComponent={
+          <View className="items-center justify-center mt-10">
+            <Text className="text-muted dark:text-ink-400 text-sm text-center">
+              {t('search.emptyHint')}
+            </Text>
+          </View>
+        }
       />
     </ScreenContainer>
   );
