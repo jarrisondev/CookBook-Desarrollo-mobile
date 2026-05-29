@@ -1,4 +1,5 @@
-import { Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { ChevronLeft, MapPin } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -11,8 +12,9 @@ import {
   ScreenContainer,
 } from '../../../components';
 import { useIconColor } from '../../../hooks/useIconColor';
-import { tripHistory } from '../../../constants/mockData';
+import { subscribeToRide } from '../../../services/firebase/rides';
 import { formatCurrency, formatTripDate } from '../../../utils/format';
+import type { Ride } from '../../../models';
 import type { MainStackParamList } from '../../../navigation/types';
 
 type Props = NativeStackScreenProps<MainStackParamList, 'TripDetail'>;
@@ -20,7 +22,25 @@ type Props = NativeStackScreenProps<MainStackParamList, 'TripDetail'>;
 export function TripDetailScreen({ navigation, route }: Props) {
   const { t } = useTranslation();
   const iconColor = useIconColor();
-  const trip = tripHistory.find((tt) => tt.id === route.params.tripId) ?? tripHistory[0];
+  const [trip, setTrip] = useState<Ride | null>(null);
+
+  useEffect(() => {
+    const unsub = subscribeToRide(route.params.tripId, setTrip);
+    return unsub;
+  }, [route.params.tripId]);
+
+  if (!trip) {
+    return (
+      <ScreenContainer>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#16A34A" />
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  const price = trip.finalFare ?? trip.fareEstimate;
+  const baseFare = trip.fareEstimate;
 
   return (
     <ScreenContainer scroll padded={false}>
@@ -37,12 +57,20 @@ export function TripDetailScreen({ navigation, route }: Props) {
       <View className="px-5 -mt-6">
         <Card>
           <View className="flex-row items-center">
-            <Avatar name={trip.driverName} size={48} />
+            <Avatar name={trip.driverName ?? trip.riderName} size={48} />
             <View className="ml-3 flex-1">
-              <Text className="text-ink-900 dark:text-white font-bold">{trip.driverName}</Text>
-              <Text className="text-muted dark:text-ink-400 text-xs">{formatTripDate(trip.date)}</Text>
+              <Text className="text-ink-900 dark:text-white font-bold">
+                {trip.driverName ?? trip.riderName}
+              </Text>
+              {trip.createdAt ? (
+                <Text className="text-muted dark:text-ink-400 text-xs">
+                  {formatTripDate(timestampToIso(trip.createdAt))}
+                </Text>
+              ) : null}
             </View>
-            <Text className="text-ink-900 dark:text-white font-bold text-lg">{formatCurrency(trip.price)}</Text>
+            <Text className="text-ink-900 dark:text-white font-bold text-lg">
+              {formatCurrency(price)}
+            </Text>
           </View>
 
           <Divider className="my-4" />
@@ -53,8 +81,12 @@ export function TripDetailScreen({ navigation, route }: Props) {
                 <MapPin size={16} color="#16A34A" />
               </View>
               <View className="flex-1">
-                <Text className="text-muted dark:text-ink-400 text-xs">{t('tripDetail.pickup')}</Text>
-                <Text className="text-ink-900 dark:text-white font-semibold">{trip.from}</Text>
+                <Text className="text-muted dark:text-ink-400 text-xs">
+                  {t('tripDetail.pickup')}
+                </Text>
+                <Text className="text-ink-900 dark:text-white font-semibold">
+                  {trip.pickup.label}
+                </Text>
               </View>
             </View>
             <View className="flex-row items-center">
@@ -62,8 +94,12 @@ export function TripDetailScreen({ navigation, route }: Props) {
                 <MapPin size={16} color="#fff" />
               </View>
               <View className="flex-1">
-                <Text className="text-muted dark:text-ink-400 text-xs">{t('tripDetail.dropoff')}</Text>
-                <Text className="text-ink-900 dark:text-white font-semibold">{trip.to}</Text>
+                <Text className="text-muted dark:text-ink-400 text-xs">
+                  {t('tripDetail.dropoff')}
+                </Text>
+                <Text className="text-ink-900 dark:text-white font-semibold">
+                  {trip.dropoff.label}
+                </Text>
               </View>
             </View>
           </View>
@@ -71,25 +107,47 @@ export function TripDetailScreen({ navigation, route }: Props) {
 
         <View className="mt-4">
           <Card>
-            <Text className="text-ink-900 dark:text-white font-bold mb-3">{t('tripDetail.fareDetails')}</Text>
+            <Text className="text-ink-900 dark:text-white font-bold mb-3">
+              {t('tripDetail.fareDetails')}
+            </Text>
             <View className="flex-row justify-between py-1.5">
               <Text className="text-muted dark:text-ink-400">{t('tripDetail.baseFare')}</Text>
-              <Text className="text-ink-900 dark:text-white font-semibold">{formatCurrency(4.5)}</Text>
-            </View>
-            <View className="flex-row justify-between py-1.5">
-              <Text className="text-muted dark:text-ink-400">{t('tripDetail.distance')}</Text>
               <Text className="text-ink-900 dark:text-white font-semibold">
-                {formatCurrency(trip.price - 4.5)}
+                {formatCurrency(baseFare)}
               </Text>
             </View>
+            {trip.tip ? (
+              <View className="flex-row justify-between py-1.5">
+                <Text className="text-muted dark:text-ink-400">Tip</Text>
+                <Text className="text-primary-600 font-semibold">
+                  {formatCurrency(trip.tip)}
+                </Text>
+              </View>
+            ) : null}
             <Divider className="my-3" />
             <View className="flex-row justify-between">
-              <Text className="text-ink-900 dark:text-white font-bold">{t('tripDetail.total')}</Text>
-              <Text className="text-ink-900 dark:text-white font-bold">{formatCurrency(trip.price)}</Text>
+              <Text className="text-ink-900 dark:text-white font-bold">
+                {t('tripDetail.total')}
+              </Text>
+              <Text className="text-ink-900 dark:text-white font-bold">
+                {formatCurrency(price)}
+              </Text>
             </View>
           </Card>
         </View>
       </View>
     </ScreenContainer>
   );
+}
+
+function timestampToIso(ts: unknown): string {
+  if (
+    ts &&
+    typeof ts === 'object' &&
+    'seconds' in ts &&
+    typeof (ts as { seconds: number }).seconds === 'number'
+  ) {
+    return new Date((ts as { seconds: number }).seconds * 1000).toISOString();
+  }
+  return new Date().toISOString();
 }
